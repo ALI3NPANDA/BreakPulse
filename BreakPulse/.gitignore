@@ -1,0 +1,115 @@
+# Visual Studio / .NET / Rider common
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.dotsettings.user
+*.DotSettings.user
+.vscode/
+.idea/
+*.ncrunch*
+
+# Build outputs
+[Bb]in/
+[Oo]bj/
+**/bin/
+**/obj/
+publish/
+artifacts/
+
+# Rider/IDE caches
+/.idea/
+.idea/*
+!.idea/.gitignore
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+
+# Rider & JetBrains
+.idea/
+*.iml
+
+# Rider Rider caches
+rider-project/
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# User-specific files
+*.vsp
+*.vsix
+*.dbmdl
+
+# Visual Studio Code
+.vscode/*
+
+# Dotnet Tools
+.tools/
+.toolstargets/
+
+# Mono
+mono_crash.*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Generated files (WPF / MSBuild generated)
+*.g.cs
+*.g.i.cs
+*.generated.cs
+*.designer.cs
+*.baml
+
+# Publish output
+*.deploy
+*.pubxml
+*.Publish.xml
+
+# Runtime files
+*.runtimeconfig.json
+*.deps.json
+
+# Rider and Visual Studio test results
+TestResults/
+*.trx
+
+# nuget packages folder used by older projects
+packages/
+
+# Package managers
+node_modules/
+yarn-error.log
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Backup files
+*.bak
+*.swp
+
+# Binary assets (do not attempt to merge)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.exe
+*.dll
