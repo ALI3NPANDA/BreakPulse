@@ -1,5 +1,10 @@
 using System.Net.Http;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Effects;
 using BreakPulse.Models;
 using BreakPulse.Services;
 
@@ -11,13 +16,176 @@ public partial class SettingsWindow : Window
     private readonly TimerService _timer;
     private readonly TeamService  _team;
 
+    // 10 exercise-slot text boxes, built once in BuildExerciseSlots()
+    private readonly List<TextBox> _exerciseBoxes = new();
+
+    // Page references for navigation
+    private readonly ScrollViewer[] _pages;
+
+    // ── Appearance: gradient theme presets ───────────────────────────────────
+    private static readonly (string Name, string Inner, string Outer)[] _themes =
+    {
+        ("Plasma",   "#6C63FF", "#00E5A0"),
+        ("Ocean",    "#0EA5E9", "#06B6D4"),
+        ("Sunset",   "#F97316", "#EC4899"),
+        ("Midnight", "#1E40AF", "#7C3AED"),
+        ("Forest",   "#16A34A", "#0D9488"),
+        ("Sakura",   "#EC4899", "#F43F5E"),
+        ("Ember",    "#F59E0B", "#EF4444"),
+        ("Arctic",   "#60CDFF", "#818CF8"),
+    };
+
+    private readonly List<Border> _swatchIndicators = new();
+    private int _selectedThemeIdx = 0;
+
     public SettingsWindow(AppSettings settings, TimerService timer, TeamService team)
     {
         InitializeComponent();
         _s     = settings;
         _timer = timer;
         _team  = team;
+
+        _pages = new[] { TimerPage, AlertsPage, DisplayPage, TeamPage };
+
+        BuildThemeSwatches();
+        BuildExerciseSlots();
         LoadFromSettings();
+    }
+
+    // ── Title bar drag ───────────────────────────────────────────────────────
+
+    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 1)
+            DragMove();
+    }
+
+    // ── Navigation ───────────────────────────────────────────────────────────
+
+    private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_pages == null) return;
+
+        var idx = NavList.SelectedIndex;
+        for (var i = 0; i < _pages.Length; i++)
+            _pages[i].Visibility = i == idx ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    // ── Theme swatches ────────────────────────────────────────────────────────
+
+    private void BuildThemeSwatches()
+    {
+        ThemeSwatchPanel.Children.Clear();
+        _swatchIndicators.Clear();
+
+        for (var i = 0; i < _themes.Length; i++)
+        {
+            var (name, inner, outer) = _themes[i];
+            var idx = i;
+
+            var innerColor = (Color)ColorConverter.ConvertFromString(inner);
+            var outerColor = (Color)ColorConverter.ConvertFromString(outer);
+
+            var gradient = new RadialGradientBrush();
+            gradient.GradientStops.Add(new GradientStop(innerColor, 0.2));
+            gradient.GradientStops.Add(new GradientStop(outerColor, 1.0));
+
+            // Selection ring overlay
+            var ring = new Border
+            {
+                BorderBrush     = new SolidColorBrush(Color.FromRgb(0x60, 0xCD, 0xFF)),
+                BorderThickness = new Thickness(2.5),
+                CornerRadius    = new CornerRadius(9),
+                Visibility      = Visibility.Collapsed,
+            };
+            _swatchIndicators.Add(ring);
+
+            // Name label with shadow for legibility on any gradient
+            var label = new TextBlock
+            {
+                Text                = name,
+                FontFamily          = new FontFamily("Segoe UI Variable, Segoe UI"),
+                FontSize            = 11,
+                FontWeight          = FontWeights.SemiBold,
+                Foreground          = new SolidColorBrush(Colors.White),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment   = VerticalAlignment.Bottom,
+                Margin              = new Thickness(0, 0, 0, 7),
+                Effect              = new DropShadowEffect { BlurRadius = 6, ShadowDepth = 0, Opacity = 0.9 },
+            };
+
+            var inner2 = new Grid();
+            inner2.Children.Add(ring);
+            inner2.Children.Add(label);
+
+            var swatch = new Border
+            {
+                Width        = 104,
+                Height       = 68,
+                CornerRadius = new CornerRadius(8),
+                Margin       = new Thickness(0, 0, 8, 8),
+                Background   = gradient,
+                Cursor       = Cursors.Hand,
+                Child        = inner2,
+            };
+            swatch.MouseLeftButtonDown += (_, _) => SelectTheme(idx);
+            ThemeSwatchPanel.Children.Add(swatch);
+        }
+    }
+
+    private void SelectTheme(int idx)
+    {
+        _selectedThemeIdx = idx;
+        for (var i = 0; i < _swatchIndicators.Count; i++)
+            _swatchIndicators[i].Visibility = i == idx ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private int FindThemeIndex(string innerHex)
+    {
+        for (var i = 0; i < _themes.Length; i++)
+            if (string.Equals(_themes[i].Inner, innerHex, StringComparison.OrdinalIgnoreCase))
+                return i;
+        return 0;
+    }
+
+    // ── Exercise list UI ──────────────────────────────────────────────────────
+
+    private void BuildExerciseSlots()
+    {
+        for (var i = 0; i < 10; i++)
+        {
+            var row = new DockPanel { Margin = new Thickness(0, 0, 0, 6), LastChildFill = true };
+
+            var label = new TextBlock
+            {
+                Text              = $"{i + 1}.",
+                Foreground        = new SolidColorBrush(Color.FromArgb(0x88, 0xFF, 0xFF, 0xFF)),
+                FontFamily        = new FontFamily("Segoe UI Variable, Segoe UI"),
+                FontSize          = 13,
+                Width             = 26,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            DockPanel.SetDock(label, Dock.Left);
+
+            var box = new TextBox
+            {
+                Background      = new SolidColorBrush(Color.FromRgb(0x30, 0x30, 0x30)),
+                Foreground      = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF)),
+                CaretBrush      = new SolidColorBrush(Color.FromRgb(0x60, 0xCD, 0xFF)),
+                BorderBrush     = new SolidColorBrush(Color.FromArgb(0x25, 0xFF, 0xFF, 0xFF)),
+                BorderThickness = new Thickness(1),
+                Padding         = new Thickness(10, 7, 10, 7),
+                FontFamily      = new FontFamily("Segoe UI Variable, Segoe UI"),
+                FontSize        = 13,
+                TextWrapping    = TextWrapping.Wrap,
+                AcceptsReturn   = false
+            };
+
+            _exerciseBoxes.Add(box);
+            row.Children.Add(label);
+            row.Children.Add(box);
+            ExerciseListPanel.Children.Add(row);
+        }
     }
 
     // ── Load ──────────────────────────────────────────────────────────────
@@ -38,17 +206,22 @@ public partial class SettingsWindow : Window
 
         // Alerts tab
         AlertModeCombo.SelectedIndex = (int)_s.NotificationMode;
-        BreakMessageBox.Text         = _s.BreakMessage;
         SoundToggle.IsChecked        = _s.PlaySound;
         ShortcutToggle.IsChecked     = _s.RequireShortcut;
         BlockScreenToggle.IsChecked  = _s.BlockScreenOnBreak;
 
-        // Display tab
-        PositionCombo.SelectedIndex  = (int)_s.Position;
-        SizeSlider.Value             = _s.HudSize;
-        OpacitySlider.Value          = (int)(_s.IdleOpacity * 100);
+        // Exercise slots
+        var exercises = _s.Exercises;
+        for (var i = 0; i < _exerciseBoxes.Count; i++)
+            _exerciseBoxes[i].Text = i < exercises.Count ? exercises[i] : "";
+
+        // Appearance tab
+        var themeIdx = FindThemeIndex(_s.GradientInnerColor);
+        SelectTheme(themeIdx);
         ArcToggle.IsChecked          = _s.ShowProgressArc;
-        DotToggle.IsChecked          = _s.CollapseToDot;
+        ArcThicknessSlider.Value     = _s.ArcThickness;
+        ShowCountdownToggle.IsChecked = _s.ShowCountdown;
+        ShowExerciseToggle.IsChecked  = _s.ShowExercise;
         TopMostToggle.IsChecked      = _s.AlwaysOnTop;
 
         // Team tab
@@ -66,13 +239,12 @@ public partial class SettingsWindow : Window
 
     private void UpdateLabels()
     {
-        SessionVal.Text      = $"{(int)SessionSlider.Value} min";
-        BreakVal.Text        = $"{(int)BreakSlider.Value} min";
-        LongBreakVal.Text    = $"{(int)LongBreakSlider.Value} sessions";
-        LongBreakDurVal.Text = $"{(int)LongBreakDurSlider.Value} min";
-        PreWarnVal.Text      = $"{(int)PreWarnSlider.Value} min";
-        SizeVal.Text         = $"{(int)SizeSlider.Value} px";
-        OpacityVal.Text      = $"{(int)OpacitySlider.Value}%";
+        SessionVal.Text          = $"{(int)SessionSlider.Value} min";
+        BreakVal.Text            = $"{(int)BreakSlider.Value} min";
+        LongBreakVal.Text        = $"{(int)LongBreakSlider.Value} sessions";
+        LongBreakDurVal.Text     = $"{(int)LongBreakDurSlider.Value} min";
+        PreWarnVal.Text          = $"{(int)PreWarnSlider.Value} min";
+        ArcThicknessVal.Text     = $"{(int)ArcThicknessSlider.Value} px";
     }
 
     // ── Slider handlers ───────────────────────────────────────────────────
@@ -92,11 +264,10 @@ public partial class SettingsWindow : Window
     private void PreWarnSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
         => PreWarnVal.Text = $"{(int)PreWarnSlider.Value} min";
 
-    private void SizeSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
-        => SizeVal.Text = $"{(int)SizeSlider.Value} px";
+    private void ArcThicknessSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
+        => ArcThicknessVal.Text = $"{(int)ArcThicknessSlider.Value} px";
 
-    private void OpacitySlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
-        => OpacityVal.Text = $"{(int)OpacitySlider.Value}%";
+    // Old slider handlers no longer used (SizeSlider / OpacitySlider removed):
 
     // ── Team ─────────────────────────────────────────────────────────────
 
@@ -133,18 +304,25 @@ public partial class SettingsWindow : Window
         _s.AutoResume          = AutoResumeToggle.IsChecked == true;
 
         // Alerts
-        _s.NotificationMode  = (AlertMode)AlertModeCombo.SelectedIndex;
-        _s.BreakMessage      = BreakMessageBox.Text;
-        _s.PlaySound         = SoundToggle.IsChecked == true;
-        _s.RequireShortcut   = ShortcutToggle.IsChecked == true;
-        _s.BlockScreenOnBreak= BlockScreenToggle.IsChecked == true;
+        _s.NotificationMode   = (AlertMode)AlertModeCombo.SelectedIndex;
+        _s.PlaySound          = SoundToggle.IsChecked == true;
+        _s.RequireShortcut    = ShortcutToggle.IsChecked == true;
+        _s.BlockScreenOnBreak = BlockScreenToggle.IsChecked == true;
 
-        // Display
-        _s.Position         = (HudPosition)PositionCombo.SelectedIndex;
-        _s.HudSize          = (int)SizeSlider.Value;
-        _s.IdleOpacity      = OpacitySlider.Value / 100.0;
+        // Exercise list — pad / trim to exactly 10 slots
+        _s.Exercises = _exerciseBoxes.Select(b => b.Text.Trim()).ToList();
+        while (_s.Exercises.Count < 10) _s.Exercises.Add("");
+
+        // Appearance
+        if (_selectedThemeIdx >= 0 && _selectedThemeIdx < _themes.Length)
+        {
+            _s.GradientInnerColor = _themes[_selectedThemeIdx].Inner;
+            _s.GradientOuterColor = _themes[_selectedThemeIdx].Outer;
+        }
         _s.ShowProgressArc  = ArcToggle.IsChecked == true;
-        _s.CollapseToDot    = DotToggle.IsChecked == true;
+        _s.ArcThickness     = ArcThicknessSlider.Value;
+        _s.ShowCountdown    = ShowCountdownToggle.IsChecked == true;
+        _s.ShowExercise     = ShowExerciseToggle.IsChecked == true;
         _s.AlwaysOnTop      = TopMostToggle.IsChecked == true;
 
         // Team

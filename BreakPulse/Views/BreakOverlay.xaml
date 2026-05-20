@@ -68,7 +68,7 @@
         </Canvas>
 
         <!-- Inner border ring -->
-        <Ellipse Width="460" Height="460"
+        <Ellipse Width="500" Height="500"
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center"
                  Fill="Transparent"
@@ -103,33 +103,24 @@
                        HorizontalAlignment="Center"
                        Margin="0,0,0,12"/>
 
-            <TextBlock Text="remaining"
+            <TextBlock x:Name="RemainingLabel"
+                       Text="Remaining"
                        FontFamily="Segoe UI"
-                       FontSize="9"
+                       FontSize="15"
                        FontWeight="Medium"
                        Foreground="#FF5C5A6E"
                        HorizontalAlignment="Center"
                        Margin="0,0,0,12"
                        TextOptions.TextFormattingMode="Display"/>
 
-            <!-- Message -->
-            <TextBlock x:Name="MessageLabel"
-                       FontFamily="Segoe UI Emoji, Segoe UI"
-                       FontSize="12"
-                       Foreground="#FF9997AA"
-                       HorizontalAlignment="Center"
-                       TextAlignment="Center"
-                       TextWrapping="Wrap"
-                       LineHeight="18"
-                       Margin="0,0,0,12"/>
-
             <!-- Stretch suggestion card -->
-            <Border Background="#12FFFFFF"
+            <Border x:Name="ExerciseCard"
+                    Background="#12FFFFFF"
                     CornerRadius="10"
                     Padding="12,8"
                     Margin="0,0,0,14">
                 <ContentControl x:Name="ExerciseViewHost"
-                                Height="40"
+                                Height="100"
                                 IsHitTestVisible="False"/>
             </Border>
 

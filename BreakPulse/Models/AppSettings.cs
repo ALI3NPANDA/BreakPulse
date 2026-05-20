@@ -21,9 +21,23 @@ public class AppSettings
     public bool   AutoResume          { get; set; } = true;
 
     // ── Alerts ────────────────────────────────────────────────────────────────
-    public AlertMode NotificationMode  { get; set; } = AlertMode.Overlay;
-    public string    BreakMessage      { get; set; } = "🧘 You've been at it for a while. Stand up, stretch, grab some water.";
-    public bool      PlaySound         { get; set; } = true;
+    public AlertMode     NotificationMode  { get; set; } = AlertMode.Overlay;
+    public bool          PlaySound         { get; set; } = true;
+
+    // Exercise messages shown randomly during breaks (10 fixed slots; empty = skipped)
+    public List<string> Exercises { get; set; } = new()
+    {
+        "👀 Look at something 20 feet away for 20 seconds — rest your eyes.",
+        "🧍‍♂️ Roll your shoulders back 5 times, then forward 5 times.",
+        "💧 Grab a glass of water — hydration helps focus.",
+        "🚶 Take a short walk — even 2 minutes around the room helps.",
+        "🙆‍♂️ Reach both arms up, hold for 5 seconds, release and breathe.",
+        "😌 Close your eyes, take 5 slow deep breaths.",
+        "🦵 Stand up, do 10 calf raises.",
+        "🤲 Shake out your hands — relieve typing tension.",
+        "",
+        ""
+    };
     public bool      RequireShortcut   { get; set; } = false;
     public bool      BlockScreenOnBreak{ get; set; } = false;
 
@@ -35,6 +49,13 @@ public class AppSettings
     public bool        ShowProgressArc { get; set; } = true;
     public bool        CollapseToDot   { get; set; } = false;
     public bool        AlwaysOnTop     { get; set; } = true;
+
+    // ── Appearance ────────────────────────────────────────────────────────────
+    public string GradientInnerColor { get; set; } = "#6C63FF";
+    public string GradientOuterColor { get; set; } = "#00E5A0";
+    public double ArcThickness       { get; set; } = 4.0;
+    public bool   ShowCountdown      { get; set; } = true;
+    public bool   ShowExercise       { get; set; } = true;
 
     // ── Team / Enterprise ─────────────────────────────────────────────────────
     public bool   TeamTelemetryEnabled { get; set; } = false;

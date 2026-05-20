@@ -34,7 +34,6 @@ public class TrayService : IDisposable
                 {
                     _statusItem,
                     new System.Windows.Controls.MenuItem { Header = "Settings", Command = new RelayCommand(_ => onShowSettings()) },
-                    new System.Windows.Controls.MenuItem { Header = "-" }, // Separator replacement
                     new System.Windows.Controls.MenuItem { Header = "Quit BreakPulse", Command = new RelayCommand(_ => onQuit()) }
                 }
             }

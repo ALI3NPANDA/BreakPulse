@@ -30,21 +30,12 @@ public partial class BreakOverlay : Window
     private string _titleHtml    = "";
     private string _exerciseHtml = "";
 
-    private static readonly string[] Exercises =
-    [
-        "👀 Look at something 20 feet away for 20 seconds — rest your eyes.",
-        "🧍‍♂️ Roll your shoulders back 5 times, then forward 5 times.",
-        "💧 Grab a glass of water — hydration helps focus.",
-        "🚶 Take a short walk — even 2 minutes around the room helps.",
-        "🙆‍♂️ Reach both arms up, hold for 5 seconds, release and breathe.",
-        "😌 Close your eyes, take 5 slow deep breaths.",
-        "🦵 Stand up, do 10 calf raises.",
-        "🤲 Shake out your hands — relieve typing tension.",
-    ];
 
     public BreakOverlay(AppSettings settings, TimerService timer)
     {
         InitializeComponent();
+        DataContext = this;
+
         _s           = settings;
         _timer       = timer;
         _accentColor = GetWindowsAccentColor();
@@ -57,16 +48,14 @@ public partial class BreakOverlay : Window
         // Build HTML content
         if (timer.IsLongBreak)
         {
-            _titleHtml        = EmojiHtml("🌟 Long Break Time!", "#F0EFF5", 22, "600");
-            MessageLabel.Text = "You've earned a proper rest. Step away, recharge fully.";
+            _titleHtml        = EmojiHtml("🌟 Long Break Time! 🌟", "#FFFFFF", 25, "600");
         }
         else
         {
-            _titleHtml        = EmojiHtml("Time to rest", "#F0EFF5", 22, "600");
-            MessageLabel.Text = settings.BreakMessage;
+            _titleHtml        = EmojiHtml("Time to rest", "#FFFFFF", 25, "600");
         }
 
-        _exerciseHtml = EmojiHtml(Exercises[Random.Shared.Next(Exercises.Length)], "#9997AA", 13);
+        _exerciseHtml = EmojiHtml(PickRandomExercise(settings.Exercises), "#FFFFFF", 18);
 
         if (settings.RequireShortcut)
         {
@@ -162,11 +151,30 @@ public partial class BreakOverlay : Window
         BeginAnimation(OpacityProperty, fadeIn);
 
         // ── Apply colors ─────────────────────────────────────────────────────
-        // White arc is always visible against the violet→teal gradient background.
+        // Apply user gradient colors to the background circle
+        try
+        {
+            var innerColor = (Color)ColorConverter.ConvertFromString(_s.GradientInnerColor);
+            var outerColor = (Color)ColorConverter.ConvertFromString(_s.GradientOuterColor);
+            BgCircleBrush.GradientStops[0].Color = innerColor;
+            BgCircleBrush.GradientStops[1].Color = outerColor;
+        }
+        catch { /* keep XAML defaults if color parse fails */ }
+
+        // White arc always contrasts against any gradient
         ArcBrush.Color            = Colors.White;
-        // Keep CountdownLabel white regardless of Windows accent color.
         CountdownLabel.Foreground = new SolidColorBrush(Colors.White);
-        // Do NOT override BgCircleBrush — let the XAML violet→teal gradient show as designed.
+
+        // Apply arc thickness
+        ArcFill.StrokeThickness  = _s.ArcThickness;
+        ArcTrack.StrokeThickness = _s.ArcThickness;
+
+        // Apply visibility toggles
+        var countdownVis  = _s.ShowCountdown ? Visibility.Visible : Visibility.Collapsed;
+        CountdownLabel.Visibility  = countdownVis;
+        RemainingLabel.Visibility  = countdownVis;
+        ExerciseCard.Visibility    = _s.ShowExercise ? Visibility.Visible : Visibility.Collapsed;
+        Topmost                    = _s.AlwaysOnTop;
 
         // ── Progress ring ────────────────────────────────────────────────────
         DrawTrackArc();
@@ -192,6 +200,15 @@ public partial class BreakOverlay : Window
         _iconView.NavigateToString(EmojiHtml("🧘", "#F0EFF5", 48));
         _titleView.NavigateToString(_titleHtml);
         _exerciseView.NavigateToString(_exerciseHtml);
+    }
+
+    // Picks a random non-empty exercise; falls back to a default if all are empty.
+    private static string PickRandomExercise(IList<string> exercises)
+    {
+        var active = exercises.Where(e => !string.IsNullOrWhiteSpace(e)).ToList();
+        return active.Count > 0
+            ? active[Random.Shared.Next(active.Count)]
+            : "🧘 Take a moment to breathe and stretch.";
     }
 
     // Builds a transparent-background HTML page that renders color emoji via Chromium.
