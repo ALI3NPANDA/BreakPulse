@@ -94,6 +94,14 @@ public partial class BreakOverlay : Window
         return Color.FromRgb(108, 99, 255); // fallback violet
     }
 
+    private static Color BlendColor(Color a, Color b, double t)
+    {
+        return Color.FromRgb(
+            (byte)(a.R + (b.R - a.R) * t),
+            (byte)(a.G + (b.G - a.G) * t),
+            (byte)(a.B + (b.B - a.B) * t));
+    }
+
     // ── Arc drawing ───────────────────────────────────────────────────────────
 
     private void DrawTrackArc()
@@ -107,10 +115,11 @@ public partial class BreakOverlay : Window
     {
         var remaining = 1.0 - progress;
         var sweep     = Math.Max(0, Math.Min(remaining * 360, 359.99));
-        if (sweep < 0.1) { ArcFill.Data = null; return; }
-        // Start point advances clockwise from 12 o'clock as the break elapses.
+        if (sweep < 0.1) { ArcFill.Data = null; ArcGlow.Data = null; return; }
         var startDeg = Math.Min(progress * 360, 359.99);
-        ArcFill.Data = BuildArcGeometry(startDeg, sweep);
+        var geo = BuildArcGeometry(startDeg, sweep);
+        ArcFill.Data = geo;
+        ArcGlow.Data = geo;
     }
 
     private static Geometry BuildArcGeometry(double startDeg, double sweepDeg)
@@ -144,30 +153,35 @@ public partial class BreakOverlay : Window
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         // ── Fade-in animation (starts immediately) ───────────────────────────
-        var fadeIn = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(600)))
+        var fadeIn = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(700)))
         {
             EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
         };
         BeginAnimation(OpacityProperty, fadeIn);
 
+        // ── Start ambient pulse glow ─────────────────────────────────────────
+        var pulse = (Storyboard)FindResource("PulseGlow");
+        pulse.Begin();
+
         // ── Apply colors ─────────────────────────────────────────────────────
-        // Apply user gradient colors to the background circle
         try
         {
             var innerColor = (Color)ColorConverter.ConvertFromString(_s.GradientInnerColor);
             var outerColor = (Color)ColorConverter.ConvertFromString(_s.GradientOuterColor);
+            // 3-stop gradient: bright center → deep mid → dark edge
             BgCircleBrush.GradientStops[0].Color = innerColor;
-            BgCircleBrush.GradientStops[1].Color = outerColor;
+            BgCircleBrush.GradientStops[1].Color = BlendColor(innerColor, Color.FromRgb(13, 27, 42), 0.55);
+            BgCircleBrush.GradientStops[2].Color = Color.FromRgb(13, 27, 42);
+            // Outer glow tints to inner color
+            OuterGlowBrush.GradientStops[0].Color = innerColor;
         }
         catch { /* keep XAML defaults if color parse fails */ }
 
-        // White arc always contrasts against any gradient
+        // White arc always contrasts against the dark gradient
         ArcBrush.Color            = Colors.White;
+        ArcGlowBrush.Color       = Colors.White;
         CountdownLabel.Foreground = new SolidColorBrush(Colors.White);
 
-        // Apply arc thickness
-        ArcFill.StrokeThickness  = _s.ArcThickness;
-        ArcTrack.StrokeThickness = _s.ArcThickness;
 
         // Apply visibility toggles
         var countdownVis  = _s.ShowCountdown ? Visibility.Visible : Visibility.Collapsed;
@@ -179,6 +193,7 @@ public partial class BreakOverlay : Window
         // ── Progress ring ────────────────────────────────────────────────────
         DrawTrackArc();
         DrawBreakArc(0); // progress=0 → full ring at start
+        ArcGlow.Data = ArcFill.Data; // sync glow with fill
 
         // ── WebView2 setup ───────────────────────────────────────────────────
         _iconView.DefaultBackgroundColor     = System.Drawing.Color.Transparent;
@@ -248,7 +263,6 @@ public partial class BreakOverlay : Window
                 DrawBreakArc(progress); // start advances clockwise; arc drains clockwise
 
                 // Color: white → amber → red as break time runs out
-                // (white always contrasts against the violet/teal gradient background)
                 var arcColor = progress switch
                 {
                     < 0.7 => Colors.White,                          // white — plenty of time
@@ -256,6 +270,7 @@ public partial class BreakOverlay : Window
                     _     => Color.FromRgb(239,  68,  68)           // red   — last 10 %
                 };
                 ArcBrush.Color            = arcColor;
+                ArcGlowBrush.Color        = arcColor;
                 CountdownLabel.Foreground = new SolidColorBrush(arcColor);
             });
         }

@@ -102,7 +102,7 @@
                                             <TextBlock x:Name="SessionVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="60 min" VerticalAlignment="Center"/>
                                             <TextBlock Text="Session length" Style="{StaticResource Body}" VerticalAlignment="Center"/>
                                         </DockPanel>
-                                        <Slider x:Name="SessionSlider" Minimum="1" Maximum="120" TickFrequency="5" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="SessionSlider_ValueChanged"/>
+                                        <Slider x:Name="SessionSlider" Minimum="0.1" Maximum="120" TickFrequency="5" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="SessionSlider_ValueChanged"/>
                                     </StackPanel>
                                 </Border>
 
