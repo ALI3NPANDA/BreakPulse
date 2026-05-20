@@ -25,6 +25,7 @@
   <ItemGroup>
     <!-- Tray icon — add your own .ico to Assets\ -->
     <Resource Include="Assets\icon.ico" Condition="Exists('Assets\icon.ico')" />
+    <Resource Include="Assets\emoji_meditate.png" Condition="Exists('Assets\emoji_meditate.png')" />
   </ItemGroup>
 
   <ItemGroup>

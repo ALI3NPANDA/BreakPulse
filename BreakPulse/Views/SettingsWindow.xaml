@@ -56,7 +56,7 @@
 
                         <StackPanel Margin="0,0,0,14">
                             <DockPanel><TextBlock Text="Break duration" Style="{StaticResource Body}" Width="160"/><TextBlock x:Name="BreakVal" Style="{StaticResource Mono}" DockPanel.Dock="Right" Text="5 min"/></DockPanel>
-                            <Slider x:Name="BreakSlider" Minimum="2" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" ValueChanged="BreakSlider_ValueChanged"/>
+                            <Slider x:Name="BreakSlider" Minimum="1" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" ValueChanged="BreakSlider_ValueChanged"/>
                         </StackPanel>
 
                         <StackPanel Margin="0,0,0,14">

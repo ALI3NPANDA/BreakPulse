@@ -25,7 +25,8 @@ public partial class App : Application
         _timer.TickOccurred  += OnTick;
         _timer.Start();
 
-        ShowHud();
+        // App runs silently in the background — the BreakOverlay appears when a break is due.
+        // Users can still open the HUD manually via the tray icon → "Show HUD".
     }
 
     // ── HUD ──────────────────────────────────────────────────────────────────
@@ -39,7 +40,13 @@ public partial class App : Application
 
     private void OnShowHud()   => Dispatcher.Invoke(ShowHud);
     private void OnTick(TimeSpan remaining, double progress)
-        => Dispatcher.Invoke(() => _hud?.UpdateProgress(remaining, progress));
+    {
+        Dispatcher.Invoke(() =>
+        {
+            _hud?.UpdateProgress(remaining, progress);
+            _tray?.UpdateStatus(remaining, _timer!.IsOnBreak);
+        });
+    }
 
     // ── Break alert ───────────────────────────────────────────────────────────
 
