@@ -184,22 +184,7 @@
                                 <TextBlock Text="Alerts" Style="{StaticResource H1}" Margin="0,0,0,4"/>
                                 <TextBlock Text="Notification style and break exercises" Style="{StaticResource Body}" Margin="0,0,0,24"/>
 
-                                <TextBlock Text="Notification style" Style="{StaticResource H2}" Margin="0,0,0,12"/>
-
-                                <Border Style="{StaticResource SettingCard}">
-                                    <DockPanel>
-                                        <ComboBox x:Name="AlertModeCombo" DockPanel.Dock="Right" Width="180"
-                                                  Background="#FF383838" Foreground="White"
-                                                  BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                  Padding="8,6" FontSize="13" VerticalAlignment="Center">
-                                            <ComboBoxItem Content="Full overlay" Tag="Overlay"/>
-                                            <ComboBoxItem Content="HUD pulse only" Tag="HudPulse"/>
-                                            <ComboBoxItem Content="Sound + HUD" Tag="SoundAndHud"/>
-                                            <ComboBoxItem Content="Gentle fade" Tag="GentleFade"/>
-                                        </ComboBox>
-                                        <TextBlock Text="Mode" Style="{StaticResource Body}" VerticalAlignment="Center"/>
-                                    </DockPanel>
-                                </Border>
+                                
 
                                 <TextBlock Text="Exercise list" Style="{StaticResource H2}" Margin="0,20,0,4"/>
                                 <TextBlock Text="Randomly shown during breaks. Leave a slot empty to skip it."
@@ -240,11 +225,90 @@
                                 <TextBlock Text="Appearance" Style="{StaticResource H1}" Margin="0,0,0,4"/>
                                 <TextBlock Text="Customize the look and feel of your break overlay" Style="{StaticResource Body}" Margin="0,0,0,24"/>
 
-                                <TextBlock Text="Gradient theme" Style="{StaticResource H2}" Margin="0,0,0,4"/>
-                                <TextBlock Text="Pick a color theme for the break circle" Style="{StaticResource Caption}" Margin="0,0,0,14"/>
+                                <TextBlock Text="Colors" Style="{StaticResource H2}" Margin="0,0,0,4"/>
+                                <TextBlock Text="Customize the break overlay colors" Style="{StaticResource Caption}" Margin="0,0,0,14"/>
 
-                                <!-- Swatch tiles built in code-behind -->
-                                <WrapPanel x:Name="ThemeSwatchPanel" Margin="0,0,0,4"/>
+                                <!-- Background color picker -->
+                                <Border Style="{StaticResource SettingCard}">
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border x:Name="BgColorPreview" Width="28" Height="28" CornerRadius="6"
+                                                    Background="#FF0D0D11" BorderBrush="#25FFFFFF" BorderThickness="1"
+                                                    Margin="0,0,8,0"/>
+                                            <TextBox x:Name="BgColorBox" Width="100"
+                                                     Background="#FF383838" Foreground="White"
+                                                     BorderBrush="#25FFFFFF" BorderThickness="1"
+                                                     Padding="6,5" FontSize="13" FontFamily="Cascadia Code, Consolas"
+                                                     TextChanged="BgColorBox_TextChanged"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Background color" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Border>
+
+                                <!-- Particle / accent color picker -->
+                                <Border Style="{StaticResource SettingCard}">
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border x:Name="AccentColorPreview" Width="28" Height="28" CornerRadius="6"
+                                                    Background="#FF6C63FF" BorderBrush="#25FFFFFF" BorderThickness="1"
+                                                    Margin="0,0,8,0"/>
+                                            <TextBox x:Name="AccentColorBox" Width="100"
+                                                     Background="#FF383838" Foreground="White"
+                                                     BorderBrush="#25FFFFFF" BorderThickness="1"
+                                                     Padding="6,5" FontSize="13" FontFamily="Cascadia Code, Consolas"
+                                                     TextChanged="AccentColorBox_TextChanged"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Particle accent color" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Border>
+
+                                <!-- Wave color picker -->
+                                <Border Style="{StaticResource SettingCard}">
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border x:Name="WaveColorPreview" Width="28" Height="28" CornerRadius="6"
+                                                    Background="#FF00C8B4" BorderBrush="#25FFFFFF" BorderThickness="1"
+                                                    Margin="0,0,8,0"/>
+                                            <TextBox x:Name="WaveColorBox" Width="100"
+                                                     Background="#FF383838" Foreground="White"
+                                                     BorderBrush="#25FFFFFF" BorderThickness="1"
+                                                     Padding="6,5" FontSize="13" FontFamily="Cascadia Code, Consolas"
+                                                     TextChanged="WaveColorBox_TextChanged"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Particle wave color" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Border>
+
+                                <TextBlock Text="Blocking screen" Style="{StaticResource H2}" Margin="0,20,0,4"/>
+                                <TextBlock Text="Customize the fullscreen blocking background" Style="{StaticResource Caption}" Margin="0,0,0,14"/>
+
+                                <!-- Block screen color picker -->
+                                <Border Style="{StaticResource SettingCard}">
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border x:Name="BlockColorPreview" Width="28" Height="28" CornerRadius="6"
+                                                    Background="#FF404040" BorderBrush="#25FFFFFF" BorderThickness="1"
+                                                    Margin="0,0,8,0"/>
+                                            <TextBox x:Name="BlockColorBox" Width="100"
+                                                     Background="#FF383838" Foreground="White"
+                                                     BorderBrush="#25FFFFFF" BorderThickness="1"
+                                                     Padding="6,5" FontSize="13" FontFamily="Cascadia Code, Consolas"
+                                                     TextChanged="BlockColorBox_TextChanged"/>
+                                        </StackPanel>
+                                        <TextBlock Text="Block screen color" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Border>
+
+                                <!-- Block screen opacity slider -->
+                                <Border Style="{StaticResource SettingCard}">
+                                    <StackPanel>
+                                        <DockPanel>
+                                            <TextBlock x:Name="BlockOpacityVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="85%" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Block screen opacity" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        </DockPanel>
+                                        <Slider x:Name="BlockOpacitySlider" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="BlockOpacitySlider_ValueChanged"/>
+                                    </StackPanel>
+                                </Border>
 
                                 <TextBlock Text="Progress arc" Style="{StaticResource H2}" Margin="0,20,0,12"/>
 
@@ -253,16 +317,6 @@
                                         <ToggleButton x:Name="ArcToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
                                         <TextBlock Text="Show progress arc" Style="{StaticResource Body}" VerticalAlignment="Center"/>
                                     </DockPanel>
-                                </Border>
-
-                                <Border Style="{StaticResource SettingCard}">
-                                    <StackPanel>
-                                        <DockPanel>
-                                            <TextBlock x:Name="ArcThicknessVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="4 px" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Arc thickness" Style="{StaticResource Body}" VerticalAlignment="Center"/>
-                                        </DockPanel>
-                                        <Slider x:Name="ArcThicknessSlider" Minimum="2" Maximum="12" TickFrequency="1" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="ArcThicknessSlider_ValueChanged"/>
-                                    </StackPanel>
                                 </Border>
 
                                 <TextBlock Text="Break experience" Style="{StaticResource H2}" Margin="0,20,0,12"/>

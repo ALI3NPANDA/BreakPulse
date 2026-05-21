@@ -22,22 +22,6 @@ public partial class SettingsWindow : Window
     // Page references for navigation
     private readonly ScrollViewer[] _pages;
 
-    // ── Appearance: gradient theme presets ───────────────────────────────────
-    private static readonly (string Name, string Inner, string Outer)[] _themes =
-    {
-        ("Plasma",   "#6C63FF", "#00E5A0"),
-        ("Ocean",    "#0EA5E9", "#06B6D4"),
-        ("Sunset",   "#F97316", "#EC4899"),
-        ("Midnight", "#1E40AF", "#7C3AED"),
-        ("Forest",   "#16A34A", "#0D9488"),
-        ("Sakura",   "#EC4899", "#F43F5E"),
-        ("Ember",    "#F59E0B", "#EF4444"),
-        ("Arctic",   "#60CDFF", "#818CF8"),
-    };
-
-    private readonly List<Border> _swatchIndicators = new();
-    private int _selectedThemeIdx = 0;
-
     public SettingsWindow(AppSettings settings, TimerService timer, TeamService team)
     {
         InitializeComponent();
@@ -47,7 +31,6 @@ public partial class SettingsWindow : Window
 
         _pages = new[] { TimerPage, AlertsPage, DisplayPage, TeamPage };
 
-        BuildThemeSwatches();
         BuildExerciseSlots();
         LoadFromSettings();
     }
@@ -71,82 +54,50 @@ public partial class SettingsWindow : Window
             _pages[i].Visibility = i == idx ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    // ── Theme swatches ────────────────────────────────────────────────────────
+    // ── Color picker handlers ─────────────────────────────────────────────────
 
-    private void BuildThemeSwatches()
+    private void BgColorBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        ThemeSwatchPanel.Children.Clear();
-        _swatchIndicators.Clear();
-
-        for (var i = 0; i < _themes.Length; i++)
+        try
         {
-            var (name, inner, outer) = _themes[i];
-            var idx = i;
-
-            var innerColor = (Color)ColorConverter.ConvertFromString(inner);
-            var outerColor = (Color)ColorConverter.ConvertFromString(outer);
-
-            var gradient = new RadialGradientBrush();
-            gradient.GradientStops.Add(new GradientStop(innerColor, 0.2));
-            gradient.GradientStops.Add(new GradientStop(outerColor, 1.0));
-
-            // Selection ring overlay
-            var ring = new Border
-            {
-                BorderBrush     = new SolidColorBrush(Color.FromRgb(0x60, 0xCD, 0xFF)),
-                BorderThickness = new Thickness(2.5),
-                CornerRadius    = new CornerRadius(9),
-                Visibility      = Visibility.Collapsed,
-            };
-            _swatchIndicators.Add(ring);
-
-            // Name label with shadow for legibility on any gradient
-            var label = new TextBlock
-            {
-                Text                = name,
-                FontFamily          = new FontFamily("Segoe UI Variable, Segoe UI"),
-                FontSize            = 11,
-                FontWeight          = FontWeights.SemiBold,
-                Foreground          = new SolidColorBrush(Colors.White),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment   = VerticalAlignment.Bottom,
-                Margin              = new Thickness(0, 0, 0, 7),
-                Effect              = new DropShadowEffect { BlurRadius = 6, ShadowDepth = 0, Opacity = 0.9 },
-            };
-
-            var inner2 = new Grid();
-            inner2.Children.Add(ring);
-            inner2.Children.Add(label);
-
-            var swatch = new Border
-            {
-                Width        = 104,
-                Height       = 68,
-                CornerRadius = new CornerRadius(8),
-                Margin       = new Thickness(0, 0, 8, 8),
-                Background   = gradient,
-                Cursor       = Cursors.Hand,
-                Child        = inner2,
-            };
-            swatch.MouseLeftButtonDown += (_, _) => SelectTheme(idx);
-            ThemeSwatchPanel.Children.Add(swatch);
+            var color = (Color)ColorConverter.ConvertFromString(BgColorBox.Text);
+            BgColorPreview.Background = new SolidColorBrush(color);
         }
+        catch { /* invalid color — ignore */ }
     }
 
-    private void SelectTheme(int idx)
+    private void AccentColorBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        _selectedThemeIdx = idx;
-        for (var i = 0; i < _swatchIndicators.Count; i++)
-            _swatchIndicators[i].Visibility = i == idx ? Visibility.Visible : Visibility.Collapsed;
+        try
+        {
+            var color = (Color)ColorConverter.ConvertFromString(AccentColorBox.Text);
+            AccentColorPreview.Background = new SolidColorBrush(color);
+        }
+        catch { /* invalid color — ignore */ }
     }
 
-    private int FindThemeIndex(string innerHex)
+    private void WaveColorBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        for (var i = 0; i < _themes.Length; i++)
-            if (string.Equals(_themes[i].Inner, innerHex, StringComparison.OrdinalIgnoreCase))
-                return i;
-        return 0;
+        try
+        {
+            var color = (Color)ColorConverter.ConvertFromString(WaveColorBox.Text);
+            WaveColorPreview.Background = new SolidColorBrush(color);
+        }
+        catch { /* invalid color — ignore */ }
     }
+
+    private void BlockColorBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            var color = (Color)ColorConverter.ConvertFromString(BlockColorBox.Text);
+            BlockColorPreview.Background = new SolidColorBrush(color);
+        }
+        catch { /* invalid color — ignore */ }
+    }
+
+    private void BlockOpacitySlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
+        => BlockOpacityVal.Text = $"{(int)BlockOpacitySlider.Value}%";
 
     // ── Exercise list UI ──────────────────────────────────────────────────────
 
@@ -205,7 +156,6 @@ public partial class SettingsWindow : Window
         AutoResumeToggle.IsChecked   = _s.AutoResume;
 
         // Alerts tab
-        AlertModeCombo.SelectedIndex = (int)_s.NotificationMode;
         SoundToggle.IsChecked        = _s.PlaySound;
         ShortcutToggle.IsChecked     = _s.RequireShortcut;
         BlockScreenToggle.IsChecked  = _s.BlockScreenOnBreak;
@@ -216,10 +166,12 @@ public partial class SettingsWindow : Window
             _exerciseBoxes[i].Text = i < exercises.Count ? exercises[i] : "";
 
         // Appearance tab
-        var themeIdx = FindThemeIndex(_s.GradientInnerColor);
-        SelectTheme(themeIdx);
+        BgColorBox.Text     = _s.OverlayBackgroundColor;
+        AccentColorBox.Text = _s.ParticleAccentColor;
+        WaveColorBox.Text   = _s.ParticleWaveColor;
+        BlockColorBox.Text  = _s.BlockScreenColor;
+        BlockOpacitySlider.Value = _s.BlockScreenOpacity * 100;
         ArcToggle.IsChecked          = _s.ShowProgressArc;
-        ArcThicknessSlider.Value     = _s.ArcThickness;
         ShowCountdownToggle.IsChecked = _s.ShowCountdown;
         ShowExerciseToggle.IsChecked  = _s.ShowExercise;
         TopMostToggle.IsChecked      = _s.AlwaysOnTop;
@@ -244,7 +196,6 @@ public partial class SettingsWindow : Window
         LongBreakVal.Text        = $"{(int)LongBreakSlider.Value} sessions";
         LongBreakDurVal.Text     = $"{(int)LongBreakDurSlider.Value} min";
         PreWarnVal.Text          = $"{(int)PreWarnSlider.Value} min";
-        ArcThicknessVal.Text     = $"{(int)ArcThicknessSlider.Value} px";
     }
 
     // ── Slider handlers ───────────────────────────────────────────────────
@@ -263,11 +214,6 @@ public partial class SettingsWindow : Window
 
     private void PreWarnSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
         => PreWarnVal.Text = $"{(int)PreWarnSlider.Value} min";
-
-    private void ArcThicknessSlider_ValueChanged(object s, RoutedPropertyChangedEventArgs<double> e)
-        => ArcThicknessVal.Text = $"{(int)ArcThicknessSlider.Value} px";
-
-    // Old slider handlers no longer used (SizeSlider / OpacitySlider removed):
 
     // ── Team ─────────────────────────────────────────────────────────────
 
@@ -304,7 +250,6 @@ public partial class SettingsWindow : Window
         _s.AutoResume          = AutoResumeToggle.IsChecked == true;
 
         // Alerts
-        _s.NotificationMode   = (AlertMode)AlertModeCombo.SelectedIndex;
         _s.PlaySound          = SoundToggle.IsChecked == true;
         _s.RequireShortcut    = ShortcutToggle.IsChecked == true;
         _s.BlockScreenOnBreak = BlockScreenToggle.IsChecked == true;
@@ -314,13 +259,12 @@ public partial class SettingsWindow : Window
         while (_s.Exercises.Count < 10) _s.Exercises.Add("");
 
         // Appearance
-        if (_selectedThemeIdx >= 0 && _selectedThemeIdx < _themes.Length)
-        {
-            _s.GradientInnerColor = _themes[_selectedThemeIdx].Inner;
-            _s.GradientOuterColor = _themes[_selectedThemeIdx].Outer;
-        }
+        _s.OverlayBackgroundColor = BgColorBox.Text.Trim();
+        _s.ParticleAccentColor    = AccentColorBox.Text.Trim();
+        _s.ParticleWaveColor      = WaveColorBox.Text.Trim();
+        _s.BlockScreenColor       = BlockColorBox.Text.Trim();
+        _s.BlockScreenOpacity     = BlockOpacitySlider.Value / 100.0;
         _s.ShowProgressArc  = ArcToggle.IsChecked == true;
-        _s.ArcThickness     = ArcThicknessSlider.Value;
         _s.ShowCountdown    = ShowCountdownToggle.IsChecked == true;
         _s.ShowExercise     = ShowExerciseToggle.IsChecked == true;
         _s.AlwaysOnTop      = TopMostToggle.IsChecked == true;

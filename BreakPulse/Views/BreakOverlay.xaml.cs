@@ -4,9 +4,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using BreakPulse.Models;
+using BreakPulse.Rendering;
 using BreakPulse.Services;
 using Microsoft.Web.WebView2.Wpf;
-using Microsoft.Win32;
 
 namespace BreakPulse.Views;
 
@@ -19,8 +19,11 @@ public partial class BreakOverlay : Window
     private const double BreakArcRadius   = 222.0;
     private const double BreakArcCenterXY = 230.0; // center of 460×460 canvas
 
-    // Windows accent color, read once at construction
-    private readonly Color _accentColor;
+    // Windows accent color, read once at construction (fallback for outer glow)
+    // Note: particle colors are driven entirely by user settings now
+
+    // Particle wave animated background renderer
+    private readonly ParticleWaveRenderer _particleRenderer;
 
     // WebView2 instances created in code to avoid XAML assembly-resolution issues
     private readonly WebView2 _iconView     = new();
@@ -38,7 +41,39 @@ public partial class BreakOverlay : Window
 
         _s           = settings;
         _timer       = timer;
-        _accentColor = GetWindowsAccentColor();
+
+        // Initialize particle wave background renderer (460×460 to match the circle)
+        _particleRenderer = new ParticleWaveRenderer(460, 460);
+
+        // Apply all three particle colors from user settings
+        try
+        {
+            var accentColor = (Color)ColorConverter.ConvertFromString(_s.ParticleAccentColor);
+            _particleRenderer.AccentColor = accentColor;
+        }
+        catch { /* keep default */ }
+
+        try
+        {
+            var waveColor = (Color)ColorConverter.ConvertFromString(_s.ParticleWaveColor);
+            _particleRenderer.WaveColor = waveColor;
+        }
+        catch { /* keep default */ }
+
+        try
+        {
+            var bgColor = (Color)ColorConverter.ConvertFromString(_s.OverlayBackgroundColor);
+            _particleRenderer.BackgroundColor = bgColor;
+        }
+        catch { /* keep default */ }
+
+        ParticleBgImage.Source = _particleRenderer.Bitmap;
+
+        // ── Fullscreen blocking mode ──────────────────────────────────────────
+        if (_s.BlockScreenOnBreak)
+        {
+            ApplyFullscreenBlocking();
+        }
 
         // Inject the WebView2 controls into their placeholder slots
         IconViewHost.Content     = _iconView;
@@ -74,33 +109,39 @@ public partial class BreakOverlay : Window
         Closed  += OnWindowClosed;
     }
 
-    // ── Windows accent color ──────────────────────────────────────────────────
+    // ── Fullscreen blocking ─────────────────────────────────────────────────
 
-    private static Color GetWindowsAccentColor()
+    private void ApplyFullscreenBlocking()
     {
+        // Span window across all monitors using virtual screen bounds
+        WindowStartupLocation = WindowStartupLocation.Manual;
+        Left   = SystemParameters.VirtualScreenLeft;
+        Top    = SystemParameters.VirtualScreenTop;
+        Width  = SystemParameters.VirtualScreenWidth;
+        Height = SystemParameters.VirtualScreenHeight;
+
+        // Show the blocking background
+        BlockingBackground.Visibility = Visibility.Visible;
+        BlockingBackground.Opacity = _s.BlockScreenOpacity;
         try
         {
-            using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\DWM");
-            if (key?.GetValue("AccentColor") is int argb)
-            {
-                // Windows stores it as little-endian ABGR
-                byte r = (byte)( argb        & 0xFF);
-                byte g = (byte)((argb >>  8) & 0xFF);
-                byte b = (byte)((argb >> 16) & 0xFF);
-                return Color.FromRgb(r, g, b);
-            }
+            var blockColor = (Color)ColorConverter.ConvertFromString(_s.BlockScreenColor);
+            BlockingBackground.Background = new SolidColorBrush(blockColor);
         }
-        catch { /* ignore */ }
-        return Color.FromRgb(108, 99, 255); // fallback violet
+        catch { BlockingBackground.Background = new SolidColorBrush(Color.FromRgb(0x40, 0x40, 0x40)); }
+
+        Topmost = true;
+
+        // Prevent Alt+F4
+        Closing += (_, args) =>
+        {
+            // Only allow closing via our EndBreakAndClose method
+            if (_timer.IsOnBreak && !_closingIntentionally)
+                args.Cancel = true;
+        };
     }
 
-    private static Color BlendColor(Color a, Color b, double t)
-    {
-        return Color.FromRgb(
-            (byte)(a.R + (b.R - a.R) * t),
-            (byte)(a.G + (b.G - a.G) * t),
-            (byte)(a.B + (b.B - a.B) * t));
-    }
+    private bool _closingIntentionally;
 
     // ── Arc drawing ───────────────────────────────────────────────────────────
 
@@ -164,18 +205,32 @@ public partial class BreakOverlay : Window
         pulse.Begin();
 
         // ── Apply colors ─────────────────────────────────────────────────────
+        // Re-apply all three particle colors from settings right before Start()
         try
         {
-            var innerColor = (Color)ColorConverter.ConvertFromString(_s.GradientInnerColor);
-            var outerColor = (Color)ColorConverter.ConvertFromString(_s.GradientOuterColor);
-            // 3-stop gradient: bright center → deep mid → dark edge
-            BgCircleBrush.GradientStops[0].Color = innerColor;
-            BgCircleBrush.GradientStops[1].Color = BlendColor(innerColor, Color.FromRgb(13, 27, 42), 0.55);
-            BgCircleBrush.GradientStops[2].Color = Color.FromRgb(13, 27, 42);
-            // Outer glow tints to inner color
-            OuterGlowBrush.GradientStops[0].Color = innerColor;
+            var accentColor = (Color)ColorConverter.ConvertFromString(_s.ParticleAccentColor);
+            _particleRenderer.AccentColor = accentColor;
+            // Outer glow tints to accent color
+            OuterGlowBrush.GradientStops[0].Color = accentColor;
         }
-        catch { /* keep XAML defaults if color parse fails */ }
+        catch { /* keep defaults if color parse fails */ }
+
+        try
+        {
+            var waveColor = (Color)ColorConverter.ConvertFromString(_s.ParticleWaveColor);
+            _particleRenderer.WaveColor = waveColor;
+        }
+        catch { /* keep defaults if color parse fails */ }
+
+        try
+        {
+            var bgColor = (Color)ColorConverter.ConvertFromString(_s.OverlayBackgroundColor);
+            _particleRenderer.BackgroundColor = bgColor;
+        }
+        catch { /* keep defaults if color parse fails */ }
+
+        // Start the animated particle background
+        _particleRenderer.Start();
 
         // White arc always contrasts against the dark gradient
         ArcBrush.Color            = Colors.White;
@@ -278,7 +333,7 @@ public partial class BreakOverlay : Window
 
     private void OnBreakEndedExternally()
     {
-        Dispatcher.Invoke(() => { if (IsVisible) Close(); });
+        Dispatcher.Invoke(() => { if (IsVisible) { _closingIntentionally = true; Close(); } });
     }
 
     private void UpdateCountdownLabel(TimeSpan remaining)
@@ -292,13 +347,14 @@ public partial class BreakOverlay : Window
     {
         _timer.TickOccurred -= OnTimerTick;
         _timer.BreakEnded   -= OnBreakEndedExternally;
+        _particleRenderer.Dispose();
     }
 
     // ── Input ─────────────────────────────────────────────────────────────────
 
     private void OnMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.ChangedButton == MouseButton.Left)
+        if (e.ChangedButton == MouseButton.Left && !_s.BlockScreenOnBreak)
             DragMove();
     }
 
@@ -313,6 +369,7 @@ public partial class BreakOverlay : Window
 
     private void Snooze_Click(object sender, RoutedEventArgs e)
     {
+        _closingIntentionally = true;
         _timer.SnoozeBreak(5);
         Close();
     }
@@ -322,6 +379,7 @@ public partial class BreakOverlay : Window
 
     private void MenuSnooze_Click(object sender, RoutedEventArgs e)
     {
+        _closingIntentionally = true;
         _timer.SnoozeBreak(5);
         Close();
     }
@@ -330,6 +388,7 @@ public partial class BreakOverlay : Window
 
     private void EndBreakAndClose()
     {
+        _closingIntentionally = true;
         _timer.EndBreak();
         Close();
     }

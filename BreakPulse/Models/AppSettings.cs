@@ -51,9 +51,12 @@ public class AppSettings
     public bool        AlwaysOnTop     { get; set; } = true;
 
     // ── Appearance ────────────────────────────────────────────────────────────
-    public string GradientInnerColor { get; set; } = "#6C63FF";
-    public string GradientOuterColor { get; set; } = "#00E5A0";
-    public double ArcThickness       { get; set; } = 4.0;
+    public string OverlayBackgroundColor { get; set; } = "#0D0D11";
+    public string ParticleAccentColor    { get; set; } = "#6C63FF";
+    public string ParticleWaveColor      { get; set; } = "#00C8B4";
+    public string BlockScreenColor       { get; set; } = "#404040";
+    public double BlockScreenOpacity     { get; set; } = 0.85;
+    public double ArcThickness           { get; set; } = 4.0;
     public bool   ShowCountdown      { get; set; } = true;
     public bool   ShowExercise       { get; set; } = true;
 

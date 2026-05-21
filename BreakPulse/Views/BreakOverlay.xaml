@@ -34,8 +34,14 @@
         </Storyboard>
     </Window.Resources>
 
-    <!-- Drag the window by clicking the circle -->
-    <Grid MouseDown="OnMouseDown">
+    <!-- Fullscreen blocking background (only visible when BlockScreenOnBreak is on) -->
+    <Grid>
+        <Border x:Name="BlockingBackground" Background="Transparent" Visibility="Collapsed"/>
+
+        <!-- Break circle content, centered -->
+        <Grid x:Name="CircleContainer" Width="520" Height="520"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              MouseDown="OnMouseDown">
 
         <!-- ── Ambient outer glow halo ─────────────────────────── -->
         <Ellipse x:Name="OuterGlow"
@@ -50,19 +56,17 @@
             </Ellipse.Fill>
         </Ellipse>
 
-        <!-- ── Main background circle with deep gradient ───────── -->
-        <Ellipse Width="460" Height="460"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center">
-            <Ellipse.Fill>
-                <RadialGradientBrush x:Name="BgCircleBrush"
-                                     GradientOrigin="0.35,0.3">
-                    <GradientStop Color="#FF6C63FF" Offset="0.0"/>
-                    <GradientStop Color="#FF3B2F8A" Offset="0.55"/>
-                    <GradientStop Color="#FF0D1B2A" Offset="1.0"/>
-                </RadialGradientBrush>
-            </Ellipse.Fill>
-        </Ellipse>
+        <!-- ── Main background circle with animated particle waves ─ -->
+        <Image x:Name="ParticleBgImage"
+               Width="460" Height="460"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Stretch="Fill"
+               IsHitTestVisible="False">
+            <Image.Clip>
+                <EllipseGeometry Center="230,230" RadiusX="230" RadiusY="230"/>
+            </Image.Clip>
+        </Image>
 
         <!-- ── Decorative inner glow ring ──────────────────────── -->
         <Ellipse x:Name="InnerGlowRing"
@@ -209,5 +213,6 @@
                 <MenuItem x:Name="MenuEndBreak" Header="⏹  End Break"  Click="MenuEndBreak_Click"/>
             </ContextMenu>
         </Grid.ContextMenu>
+        </Grid>
     </Grid>
 </Window>
