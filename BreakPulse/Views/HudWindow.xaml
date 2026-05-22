@@ -21,14 +21,14 @@
         <Ellipse Width="500" Height="500"
                  Fill="Transparent"
                  Stroke="#18FFFFFF"
-                 StrokeThickness="2"/>
+                 StrokeThickness="2" />
 
         <!-- Background circle -->
         <Ellipse Width="450" Height="450"
                  HorizontalAlignment="Center"
                  VerticalAlignment="Center">
             <Ellipse.Fill>
-                <SolidColorBrush Color="#F00E0E10"/>
+                <SolidColorBrush Color="#F00E0E10" />
             </Ellipse.Fill>
         </Ellipse>
 
@@ -40,7 +40,7 @@
                   Stroke="#14FFFFFF"
                   StrokeThickness="3"
                   Fill="Transparent"
-                  Canvas.Left="6" Canvas.Top="6"/>
+                  Canvas.Left="6" Canvas.Top="6" />
             <Path x:Name="ArcFill"
                   StrokeThickness="3"
                   StrokeStartLineCap="Round"
@@ -48,7 +48,7 @@
                   Fill="Transparent"
                   Canvas.Left="6" Canvas.Top="6">
                 <Path.Stroke>
-                    <SolidColorBrush x:Name="ArcBrush" Color="#FF6C63FF"/>
+                    <SolidColorBrush x:Name="ArcBrush" Color="#FF6C63FF" />
                 </Path.Stroke>
             </Path>
         </Canvas>
@@ -59,7 +59,7 @@
                  VerticalAlignment="Center"
                  Fill="Transparent"
                  Stroke="#18FFFFFF"
-                 StrokeThickness="0.5"/>
+                 StrokeThickness="0.5" />
 
         <!-- Status dot (top-right) -->
         <Ellipse x:Name="StatusDot"
@@ -67,7 +67,7 @@
                  Fill="#FF00E5A0"
                  HorizontalAlignment="Right"
                  VerticalAlignment="Top"
-                 Margin="0,22,22,0"/>
+                 Margin="0,22,22,0" />
 
         <!-- Content -->
         <StackPanel HorizontalAlignment="Center"
@@ -80,7 +80,7 @@
                        FontSize="40"
                        FontWeight="SemiBold"
                        Foreground="#FFF0EFF5"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center" />
 
             <TextBlock x:Name="SubLabel"
                        Text="until break"
@@ -90,7 +90,7 @@
                        Foreground="#FF5C5A6E"
                        HorizontalAlignment="Center"
                        Margin="0,3,0,0"
-                       TextOptions.TextFormattingMode="Display"/>
+                       TextOptions.TextFormattingMode="Display" />
         </StackPanel>
 
         <!-- Context menu -->
@@ -100,9 +100,9 @@
                          Foreground="#FFF0EFF5"
                          FontFamily="Segoe UI"
                          FontSize="13">
-                <MenuItem x:Name="MenuPause"   Header="Pause"         Click="MenuPause_Click"/>
-                <MenuItem x:Name="MenuBreak"   Header="Take break now" Click="MenuBreak_Click"/>
-                <MenuItem x:Name="MenuSettings" Header="Settings"      Click="MenuSettings_Click"/>
+                <MenuItem x:Name="MenuPause" Header="Pause" Click="MenuPause_Click" />
+                <MenuItem x:Name="MenuBreak" Header="Take break now" Click="MenuBreak_Click" />
+                <MenuItem x:Name="MenuSettings" Header="Settings" Click="MenuSettings_Click" />
             </ContextMenu>
         </Grid.ContextMenu>
     </Grid>

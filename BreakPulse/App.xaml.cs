@@ -7,22 +7,20 @@ namespace BreakPulse;
 
 public partial class App : Application
 {
-    private TrayService?    _tray;
-    private TimerService?   _timer;
-    private TeamService?    _team;
-    private HudWindow?      _hud;
-    private AppSettings     _settings = AppSettings.Load();
+    private TrayService? _tray;
+    private TimerService? _timer;
+    private TeamService? _team;
+    private HudWindow? _hud;
+    private AppSettings _settings = AppSettings.Load();
 
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-
-        _team  = new TeamService(_settings);
+        _team = new TeamService(_settings);
         _timer = new TimerService(_settings);
-        _tray  = new TrayService(OnShowHud, OnShowSettings, OnQuit);
-
-        _timer.BreakDue      += OnBreakDue;
-        _timer.TickOccurred  += OnTick;
+        _tray = new TrayService(OnShowHud, OnShowSettings, OnQuit);
+        _timer.BreakDue += OnBreakDue;
+        _timer.TickOccurred += OnTick;
         _timer.Start();
 
         // App runs silently in the background — the BreakOverlay appears when a break is due.
@@ -38,7 +36,11 @@ public partial class App : Application
         _hud.Show();
     }
 
-    private void OnShowHud()   => Dispatcher.Invoke(ShowHud);
+    private void OnShowHud()
+    {
+        Dispatcher.Invoke(ShowHud);
+    }
+
     private void OnTick(TimeSpan remaining, double progress)
     {
         Dispatcher.Invoke(() =>

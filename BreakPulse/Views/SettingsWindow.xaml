@@ -16,9 +16,9 @@
             CornerRadius="8">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <!-- ── Custom title bar ─────────────────────────────────────── -->
@@ -28,7 +28,7 @@
                            FontSize="12"
                            Foreground="#99FFFFFF"
                            VerticalAlignment="Center"
-                           Margin="16,0,0,0"/>
+                           Margin="16,0,0,0" />
                 <Button Content="✕"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
@@ -43,11 +43,11 @@
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="Bg" Background="Transparent" CornerRadius="4" Padding="8,4">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Bg" Property="Background" Value="#22FFFFFF"/>
+                                    <Setter TargetName="Bg" Property="Background" Value="#22FFFFFF" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -58,8 +58,8 @@
             <!-- ── Main content area ────────────────────────────────────── -->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <!-- ── Left navigation panel ────────────────────────────── -->
@@ -68,19 +68,18 @@
                         <TextBlock Text="BreakPulse"
                                    FontSize="16" FontWeight="SemiBold"
                                    Foreground="White"
-                                   Margin="12,4,0,20"/>
+                                   Margin="12,4,0,20" />
                         <ListBox x:Name="NavList"
                                  Background="Transparent"
                                  BorderThickness="0"
                                  SelectionChanged="NavList_SelectionChanged"
                                  SelectedIndex="0">
                             <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource NavItem}"/>
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource NavItem}" />
                             </ListBox.ItemContainerStyle>
-                            <ListBoxItem Content="⏱  Timer"/>
-                            <ListBoxItem Content="🔔  Alerts"/>
-                            <ListBoxItem Content="🎨  Appearance"/>
-                            <ListBoxItem Content="👥  Team"/>
+                            <ListBoxItem Content="⏱  Timer" />
+                            <ListBoxItem Content="🔔  Alerts" />
+                            <ListBoxItem Content="🎨  Appearance" />
                         </ListBox>
                     </StackPanel>
                 </Border>
@@ -91,88 +90,122 @@
                         <!-- ═══ Timer Page ═══ -->
                         <ScrollViewer x:Name="TimerPage" VerticalScrollBarVisibility="Auto" Visibility="Visible">
                             <StackPanel MaxWidth="480">
-                                <TextBlock Text="Timer" Style="{StaticResource H1}" Margin="0,0,0,4"/>
-                                <TextBlock Text="Configure work sessions and break intervals" Style="{StaticResource Body}" Margin="0,0,0,24"/>
+                                <TextBlock Text="Timer" Style="{StaticResource H1}" Margin="0,0,0,4" />
+                                <TextBlock Text="Configure work sessions and break intervals"
+                                           Style="{StaticResource Body}" Margin="0,0,0,24" />
 
-                                <TextBlock Text="Work session" Style="{StaticResource H2}" Margin="0,0,0,12"/>
+                                <TextBlock Text="Work session" Style="{StaticResource H2}" Margin="0,0,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
                                         <DockPanel>
-                                            <TextBlock x:Name="SessionVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="60 min" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Session length" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="SessionVal" DockPanel.Dock="Right"
+                                                       Style="{StaticResource Mono}" Text="60 min"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock Text="Session length" Style="{StaticResource Body}"
+                                                       VerticalAlignment="Center" />
                                         </DockPanel>
-                                        <Slider x:Name="SessionSlider" Minimum="0.1" Maximum="120" TickFrequency="5" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="SessionSlider_ValueChanged"/>
+                                        <Slider x:Name="SessionSlider" Minimum="0" Maximum="120" TickFrequency="1"
+                                                IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}"
+                                                Margin="0,8,0,0" ValueChanged="SessionSlider_ValueChanged" />
                                     </StackPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
                                         <DockPanel>
-                                            <TextBlock x:Name="BreakVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="5 min" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Break duration" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="BreakVal" DockPanel.Dock="Right"
+                                                       Style="{StaticResource Mono}" Text="5 min"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock Text="Break duration" Style="{StaticResource Body}"
+                                                       VerticalAlignment="Center" />
                                         </DockPanel>
-                                        <Slider x:Name="BreakSlider" Minimum="1" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="BreakSlider_ValueChanged"/>
+                                        <Slider x:Name="BreakSlider" Minimum="1" Maximum="30" TickFrequency="1"
+                                                IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}"
+                                                Margin="0,8,0,0" ValueChanged="BreakSlider_ValueChanged" />
                                     </StackPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
                                         <DockPanel>
-                                            <TextBlock x:Name="LongBreakVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="3 sessions" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Long break every" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="LongBreakVal" DockPanel.Dock="Right"
+                                                       Style="{StaticResource Mono}" Text="3 sessions"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock Text="Long break every" Style="{StaticResource Body}"
+                                                       VerticalAlignment="Center" />
                                         </DockPanel>
-                                        <Slider x:Name="LongBreakSlider" Minimum="2" Maximum="6" TickFrequency="1" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="LongBreakSlider_ValueChanged"/>
+                                        <Slider x:Name="LongBreakSlider" Minimum="2" Maximum="6" TickFrequency="1"
+                                                IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}"
+                                                Margin="0,8,0,0" ValueChanged="LongBreakSlider_ValueChanged" />
                                     </StackPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
                                         <DockPanel>
-                                            <TextBlock x:Name="LongBreakDurVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="15 min" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Long break duration" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="LongBreakDurVal" DockPanel.Dock="Right"
+                                                       Style="{StaticResource Mono}" Text="15 min"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock Text="Long break duration" Style="{StaticResource Body}"
+                                                       VerticalAlignment="Center" />
                                         </DockPanel>
-                                        <Slider x:Name="LongBreakDurSlider" Minimum="5" Maximum="30" TickFrequency="5" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="LongBreakDurSlider_ValueChanged"/>
+                                        <Slider x:Name="LongBreakDurSlider" Minimum="5" Maximum="30" TickFrequency="5"
+                                                IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}"
+                                                Margin="0,8,0,0" ValueChanged="LongBreakDurSlider_ValueChanged" />
                                     </StackPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
                                         <DockPanel>
-                                            <TextBlock x:Name="PreWarnVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="2 min" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Pre-warning" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="PreWarnVal" DockPanel.Dock="Right"
+                                                       Style="{StaticResource Mono}" Text="2 min"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock Text="Pre-warning" Style="{StaticResource Body}"
+                                                       VerticalAlignment="Center" />
                                         </DockPanel>
-                                        <Slider x:Name="PreWarnSlider" Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="PreWarnSlider_ValueChanged"/>
+                                        <Slider x:Name="PreWarnSlider" Minimum="0" Maximum="10" TickFrequency="1"
+                                                IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}"
+                                                Margin="0,8,0,0" ValueChanged="PreWarnSlider_ValueChanged" />
                                     </StackPanel>
                                 </Border>
 
-                                <TextBlock Text="Smart scheduling" Style="{StaticResource H2}" Margin="0,20,0,12"/>
+                                <TextBlock Text="Smart scheduling" Style="{StaticResource H2}" Margin="0,20,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="SkipMeetingsToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Skip during meetings" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="SkipMeetingsToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Skip during meetings" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="IdleToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Detect idle time" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="IdleToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Detect idle time" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="AdaptiveToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Adaptive breaks" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="AdaptiveToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Adaptive breaks" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="AutoResumeToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Auto-resume after break" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="AutoResumeToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Auto-resume after break" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
                             </StackPanel>
@@ -181,39 +214,45 @@
                         <!-- ═══ Alerts Page ═══ -->
                         <ScrollViewer x:Name="AlertsPage" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
                             <StackPanel MaxWidth="480">
-                                <TextBlock Text="Alerts" Style="{StaticResource H1}" Margin="0,0,0,4"/>
-                                <TextBlock Text="Notification style and break exercises" Style="{StaticResource Body}" Margin="0,0,0,24"/>
+                                <TextBlock Text="Alerts" Style="{StaticResource H1}" Margin="0,0,0,4" />
+                                <TextBlock Text="Notification style and break exercises" Style="{StaticResource Body}"
+                                           Margin="0,0,0,24" />
 
-                                
 
-                                <TextBlock Text="Exercise list" Style="{StaticResource H2}" Margin="0,20,0,4"/>
+                                <TextBlock Text="Exercise list" Style="{StaticResource H2}" Margin="0,20,0,4" />
                                 <TextBlock Text="Randomly shown during breaks. Leave a slot empty to skip it."
-                                           Style="{StaticResource Caption}" Margin="0,0,0,12"/>
+                                           Style="{StaticResource Caption}" Margin="0,0,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}" Padding="16">
-                                    <StackPanel x:Name="ExerciseListPanel"/>
+                                    <StackPanel x:Name="ExerciseListPanel" />
                                 </Border>
 
-                                <TextBlock Text="Behaviour" Style="{StaticResource H2}" Margin="0,20,0,12"/>
+                                <TextBlock Text="Behaviour" Style="{StaticResource H2}" Margin="0,20,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="SoundToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Play a sound on break" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="SoundToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Play a sound on break" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="ShortcutToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Require Ctrl+Shift+B to dismiss" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="ShortcutToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Require Ctrl+Shift+B to dismiss" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="BlockScreenToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Block screen during break" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="BlockScreenToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Block screen during break" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
                             </StackPanel>
@@ -222,80 +261,91 @@
                         <!-- ═══ Appearance Page ═══ -->
                         <ScrollViewer x:Name="DisplayPage" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
                             <StackPanel MaxWidth="480">
-                                <TextBlock Text="Appearance" Style="{StaticResource H1}" Margin="0,0,0,4"/>
-                                <TextBlock Text="Customize the look and feel of your break overlay" Style="{StaticResource Body}" Margin="0,0,0,24"/>
+                                <TextBlock Text="Appearance" Style="{StaticResource H1}" Margin="0,0,0,4" />
+                                <TextBlock Text="Customize the look and feel of your break overlay"
+                                           Style="{StaticResource Body}" Margin="0,0,0,24" />
 
-                                <TextBlock Text="Colors" Style="{StaticResource H2}" Margin="0,0,0,4"/>
-                                <TextBlock Text="Customize the break overlay colors" Style="{StaticResource Caption}" Margin="0,0,0,14"/>
+                                <TextBlock Text="Colors" Style="{StaticResource H2}" Margin="0,0,0,4" />
+                                <TextBlock Text="Customize the break overlay colors" Style="{StaticResource Caption}"
+                                           Margin="0,0,0,14" />
 
                                 <!-- Background color picker -->
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                                    VerticalAlignment="Center">
                                             <Border x:Name="BgColorPreview" Width="28" Height="28" CornerRadius="6"
                                                     Background="#FF0D0D11" BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                    Margin="0,0,8,0"/>
+                                                    Margin="0,0,8,0" />
                                             <TextBox x:Name="BgColorBox" Width="100"
                                                      Background="#FF383838" Foreground="White"
                                                      BorderBrush="#25FFFFFF" BorderThickness="1"
                                                      Padding="6,5" FontSize="13" FontFamily="Cascadia Code, Consolas"
-                                                     TextChanged="BgColorBox_TextChanged"/>
+                                                     TextChanged="BgColorBox_TextChanged" />
                                         </StackPanel>
-                                        <TextBlock Text="Background color" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Background color" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <!-- Particle / accent color picker -->
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                                    VerticalAlignment="Center">
                                             <Border x:Name="AccentColorPreview" Width="28" Height="28" CornerRadius="6"
                                                     Background="#FF6C63FF" BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                    Margin="0,0,8,0"/>
+                                                    Margin="0,0,8,0" />
                                             <TextBox x:Name="AccentColorBox" Width="100"
                                                      Background="#FF383838" Foreground="White"
                                                      BorderBrush="#25FFFFFF" BorderThickness="1"
                                                      Padding="6,5" FontSize="13" FontFamily="Cascadia Code, Consolas"
-                                                     TextChanged="AccentColorBox_TextChanged"/>
+                                                     TextChanged="AccentColorBox_TextChanged" />
                                         </StackPanel>
-                                        <TextBlock Text="Particle accent color" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Particle accent color" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <!-- Wave color picker -->
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                                    VerticalAlignment="Center">
                                             <Border x:Name="WaveColorPreview" Width="28" Height="28" CornerRadius="6"
                                                     Background="#FF00C8B4" BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                    Margin="0,0,8,0"/>
+                                                    Margin="0,0,8,0" />
                                             <TextBox x:Name="WaveColorBox" Width="100"
                                                      Background="#FF383838" Foreground="White"
                                                      BorderBrush="#25FFFFFF" BorderThickness="1"
                                                      Padding="6,5" FontSize="13" FontFamily="Cascadia Code, Consolas"
-                                                     TextChanged="WaveColorBox_TextChanged"/>
+                                                     TextChanged="WaveColorBox_TextChanged" />
                                         </StackPanel>
-                                        <TextBlock Text="Particle wave color" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Particle wave color" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
-                                <TextBlock Text="Blocking screen" Style="{StaticResource H2}" Margin="0,20,0,4"/>
-                                <TextBlock Text="Customize the fullscreen blocking background" Style="{StaticResource Caption}" Margin="0,0,0,14"/>
+                                <TextBlock Text="Blocking screen" Style="{StaticResource H2}" Margin="0,20,0,4" />
+                                <TextBlock Text="Customize the fullscreen blocking background"
+                                           Style="{StaticResource Caption}" Margin="0,0,0,14" />
 
                                 <!-- Block screen color picker -->
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                                    VerticalAlignment="Center">
                                             <Border x:Name="BlockColorPreview" Width="28" Height="28" CornerRadius="6"
                                                     Background="#FF404040" BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                    Margin="0,0,8,0"/>
+                                                    Margin="0,0,8,0" />
                                             <TextBox x:Name="BlockColorBox" Width="100"
                                                      Background="#FF383838" Foreground="White"
                                                      BorderBrush="#25FFFFFF" BorderThickness="1"
                                                      Padding="6,5" FontSize="13" FontFamily="Cascadia Code, Consolas"
-                                                     TextChanged="BlockColorBox_TextChanged"/>
+                                                     TextChanged="BlockColorBox_TextChanged" />
                                         </StackPanel>
-                                        <TextBlock Text="Block screen color" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Block screen color" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
@@ -303,143 +353,168 @@
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
                                         <DockPanel>
-                                            <TextBlock x:Name="BlockOpacityVal" DockPanel.Dock="Right" Style="{StaticResource Mono}" Text="85%" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Block screen opacity" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="BlockOpacityVal" DockPanel.Dock="Right"
+                                                       Style="{StaticResource Mono}" Text="85%"
+                                                       VerticalAlignment="Center" />
+                                            <TextBlock Text="Block screen opacity" Style="{StaticResource Body}"
+                                                       VerticalAlignment="Center" />
                                         </DockPanel>
-                                        <Slider x:Name="BlockOpacitySlider" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}" Margin="0,8,0,0" ValueChanged="BlockOpacitySlider_ValueChanged"/>
+                                        <Slider x:Name="BlockOpacitySlider" Minimum="0" Maximum="100" TickFrequency="5"
+                                                IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}"
+                                                Margin="0,8,0,0" ValueChanged="BlockOpacitySlider_ValueChanged" />
                                     </StackPanel>
                                 </Border>
 
-                                <TextBlock Text="Progress arc" Style="{StaticResource H2}" Margin="0,20,0,12"/>
+                                <TextBlock Text="Progress arc" Style="{StaticResource H2}" Margin="0,20,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="ArcToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Show progress arc" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="ArcToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Show progress arc" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
-                                <TextBlock Text="Break experience" Style="{StaticResource H2}" Margin="0,20,0,12"/>
+                                <TextBlock Text="Break experience" Style="{StaticResource H2}" Margin="0,20,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="ShowCountdownToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Show countdown timer" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="ShowCountdownToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Show countdown timer" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="ShowExerciseToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Show exercise suggestion" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="ShowExerciseToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Show exercise suggestion" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="TopMostToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Always on top" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="TopMostToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Always on top" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
                             </StackPanel>
                         </ScrollViewer>
 
-                        <!-- ═══ Team Page ═══ -->
+                        <!-- ═══ Team Page ═══ 
                         <ScrollViewer x:Name="TeamPage" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
                             <StackPanel MaxWidth="480">
-                                <TextBlock Text="Team" Style="{StaticResource H1}" Margin="0,0,0,4"/>
-                                <TextBlock Text="Enterprise telemetry and collaboration" Style="{StaticResource Body}" Margin="0,0,0,24"/>
+                                <TextBlock Text="Team" Style="{StaticResource H1}" Margin="0,0,0,4" />
+                                <TextBlock Text="Enterprise telemetry and collaboration" Style="{StaticResource Body}"
+                                           Margin="0,0,0,24" />
 
-                                <TextBlock Text="Enterprise telemetry" Style="{StaticResource H2}" Margin="0,0,0,12"/>
+                                <TextBlock Text="Enterprise telemetry" Style="{StaticResource H2}" Margin="0,0,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="TelemetryToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Enable team telemetry" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="TelemetryToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Enable team telemetry" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
-                                        <TextBlock Text="API Endpoint" Style="{StaticResource Body}" Margin="0,0,0,6"/>
+                                        <TextBlock Text="API Endpoint" Style="{StaticResource Body}" Margin="0,0,0,6" />
                                         <TextBox x:Name="ApiEndpointBox"
                                                  Background="#FF383838" Foreground="White"
                                                  BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                 Padding="10,8" FontSize="13"/>
+                                                 Padding="10,8" FontSize="13" />
                                     </StackPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
-                                        <TextBlock Text="API Key" Style="{StaticResource Body}" Margin="0,0,0,6"/>
+                                        <TextBlock Text="API Key" Style="{StaticResource Body}" Margin="0,0,0,6" />
                                         <PasswordBox x:Name="ApiKeyBox"
                                                      Background="#FF383838" Foreground="White"
                                                      BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                     Padding="10,8" FontSize="13"/>
+                                                     Padding="10,8" FontSize="13" />
                                     </StackPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
-                                        <TextBlock Text="Your display name" Style="{StaticResource Body}" Margin="0,0,0,6"/>
+                                        <TextBlock Text="Your display name" Style="{StaticResource Body}"
+                                                   Margin="0,0,0,6" />
                                         <TextBox x:Name="DisplayNameBox"
                                                  Background="#FF383838" Foreground="White"
                                                  BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                 Padding="10,8" FontSize="13"/>
+                                                 Padding="10,8" FontSize="13" />
                                     </StackPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <StackPanel>
-                                        <TextBlock Text="Team name" Style="{StaticResource Body}" Margin="0,0,0,6"/>
+                                        <TextBlock Text="Team name" Style="{StaticResource Body}" Margin="0,0,0,6" />
                                         <TextBox x:Name="TeamNameBox"
                                                  Background="#FF383838" Foreground="White"
                                                  BorderBrush="#25FFFFFF" BorderThickness="1"
-                                                 Padding="10,8" FontSize="13"/>
+                                                 Padding="10,8" FontSize="13" />
                                     </StackPanel>
                                 </Border>
 
-                                <TextBlock Text="Privacy" Style="{StaticResource H2}" Margin="0,20,0,12"/>
+                                <TextBlock Text="Privacy" Style="{StaticResource H2}" Margin="0,20,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="AnonToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Anonymize telemetry" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="AnonToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Anonymize telemetry" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="ManagerToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Manager dashboard access" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="ManagerToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Manager dashboard access" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
-                                        <ToggleButton x:Name="SlackToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Push alerts to Slack / Teams" Style="{StaticResource Body}" VerticalAlignment="Center"/>
+                                        <ToggleButton x:Name="SlackToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Push alerts to Slack / Teams" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
 
                                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                                     <Button Content="Test connection"
                                             Style="{StaticResource PillButton}"
-                                            Click="TestConnection_Click"/>
+                                            Click="TestConnection_Click" />
                                     <TextBlock x:Name="ConnTestResult" Style="{StaticResource Body}"
-                                               VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                               VerticalAlignment="Center" Margin="12,0,0,0" />
                                 </StackPanel>
                             </StackPanel>
-                        </ScrollViewer>
+                        </ScrollViewer> -->
                     </Grid>
                 </Border>
             </Grid>
 
             <!-- ── Footer buttons ───────────────────────────────────────── -->
-            <Border Grid.Row="2" BorderBrush="#10FFFFFF" BorderThickness="0,1,0,0" Padding="24,12" CornerRadius="0,0,8,8">
+            <Border Grid.Row="2" BorderBrush="#10FFFFFF" BorderThickness="0,1,0,0" Padding="24,12"
+                    CornerRadius="0,0,8,8">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Cancel" Style="{StaticResource PillButton}" Width="100" Margin="0,0,8,0" Click="Cancel_Click"/>
-                    <Button Content="Save"   Style="{StaticResource AccentButton}" Width="100" Click="Save_Click"/>
+                    <Button Content="Cancel" Style="{StaticResource PillButton}" Width="100" Margin="0,0,8,0"
+                            Click="Cancel_Click" />
+                    <Button Content="Save" Style="{StaticResource AccentButton}" Width="100" Click="Save_Click" />
                 </StackPanel>
             </Border>
         </Grid>

@@ -1,33 +1,38 @@
 using System;
 using System.Windows.Input;
 
-namespace BreakPulse.Services
+namespace BreakPulse.Services;
+
+public class RelayCommand : ICommand
 {
-    public class RelayCommand : ICommand
+    private readonly Action<object?> _execute;
+    private readonly Predicate<object?>? _canExecute;
+
+    public RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null)
     {
-        private readonly Action<object?> _execute;
-        private readonly Predicate<object?>? _canExecute;
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
+    }
 
-        public RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null)
+    public bool CanExecute(object? parameter)
+    {
+        return _canExecute?.Invoke(parameter) ?? true;
+    }
+
+    public void Execute(object? parameter)
+    {
+        _execute(parameter);
+    }
+
+    public event EventHandler? CanExecuteChanged
+    {
+        add
         {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
+            CommandManager.RequerySuggested += value;
         }
-
-        public bool CanExecute(object? parameter)
+        remove
         {
-            return _canExecute?.Invoke(parameter) ?? true;
-        }
-
-        public void Execute(object? parameter)
-        {
-            _execute(parameter);
-        }
-
-        public event EventHandler? CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
+            CommandManager.RequerySuggested -= value;
         }
     }
 }

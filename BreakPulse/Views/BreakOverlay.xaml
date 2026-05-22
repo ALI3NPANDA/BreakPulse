@@ -14,21 +14,14 @@
 
     <Window.Resources>
         <!-- Glow pulse animation for outer ring -->
-        <Storyboard x:Key="PulseGlow" RepeatBehavior="Forever" AutoReverse="True">
-            <DoubleAnimation Storyboard.TargetName="OuterGlow"
-                             Storyboard.TargetProperty="Opacity"
-                             From="0.08" To="0.30"
-                             Duration="0:0:2.5">
+        <Storyboard x:Key="PulseGlow" RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="OuterGlow"
+                Storyboard.TargetProperty="Opacity"
+                From="0.08" To="0.20" Duration="0:0:1.5"
+                AutoReverse="True">
                 <DoubleAnimation.EasingFunction>
-                    <SineEase EasingMode="EaseInOut"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="InnerGlowRing"
-                             Storyboard.TargetProperty="Opacity"
-                             From="0.05" To="0.22"
-                             Duration="0:0:3">
-                <DoubleAnimation.EasingFunction>
-                    <SineEase EasingMode="EaseInOut"/>
+                    <CubicEase EasingMode="EaseInOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
@@ -36,183 +29,183 @@
 
     <!-- Fullscreen blocking background (only visible when BlockScreenOnBreak is on) -->
     <Grid>
-        <Border x:Name="BlockingBackground" Background="Transparent" Visibility="Collapsed"/>
+        <Border x:Name="BlockingBackground" Background="Transparent" Visibility="Collapsed" />
 
         <!-- Break circle content, centered -->
         <Grid x:Name="CircleContainer" Width="520" Height="520"
               HorizontalAlignment="Center" VerticalAlignment="Center"
               MouseDown="OnMouseDown">
 
-        <!-- ── Ambient outer glow halo ─────────────────────────── -->
-        <Ellipse x:Name="OuterGlow"
-                 Width="520" Height="520"
-                 Opacity="0.12"
-                 IsHitTestVisible="False">
-            <Ellipse.Fill>
-                <RadialGradientBrush x:Name="OuterGlowBrush">
-                    <GradientStop Color="#FF6C63FF" Offset="0.6"/>
-                    <GradientStop Color="Transparent" Offset="1"/>
-                </RadialGradientBrush>
-            </Ellipse.Fill>
-        </Ellipse>
+            <!-- ── Ambient outer glow halo ─────────────────────────── -->
+            <Ellipse x:Name="OuterGlow"
+                     Width="520" Height="520"
+                     Opacity="0.12"
+                     IsHitTestVisible="False">
+                <Ellipse.Fill>
+                    <RadialGradientBrush x:Name="OuterGlowBrush">
+                        <GradientStop Color="#FF6C63FF" Offset="0.6" />
+                        <GradientStop Color="Transparent" Offset="1" />
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
 
-        <!-- ── Main background circle with animated particle waves ─ -->
-        <Image x:Name="ParticleBgImage"
-               Width="460" Height="460"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center"
-               Stretch="Fill"
-               IsHitTestVisible="False">
-            <Image.Clip>
-                <EllipseGeometry Center="230,230" RadiusX="230" RadiusY="230"/>
-            </Image.Clip>
-        </Image>
+            <!-- ── Main background circle with animated particle waves ─ -->
+            <Image x:Name="ParticleBgImage"
+                   Width="460" Height="460"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Stretch="Fill"
+                   IsHitTestVisible="False">
+                <Image.Clip>
+                    <EllipseGeometry Center="230,230" RadiusX="230" RadiusY="230" />
+                </Image.Clip>
+            </Image>
 
-        <!-- ── Decorative inner glow ring ──────────────────────── -->
-        <Ellipse x:Name="InnerGlowRing"
-                 Width="440" Height="440"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 Fill="Transparent"
-                 Stroke="#30FFFFFF"
-                 StrokeThickness="1"
-                 Opacity="0.1"
-                 IsHitTestVisible="False"/>
+            <!-- ── Decorative inner glow ring ──────────────────────── -->
+            <Ellipse x:Name="InnerGlowRing"
+                     Width="440" Height="440"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Fill="Transparent"
+                     Stroke="#30FFFFFF"
+                     StrokeThickness="1"
+                     Opacity="0.1"
+                     IsHitTestVisible="False" />
 
-        <!-- ── Progress arc canvas — fixed 6px sleek ring ──────── -->
-        <Canvas Width="460" Height="460"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-            <!-- Track (background ring) -->
-            <Path x:Name="ArcTrack"
-                  Stroke="#10FFFFFF"
-                  StrokeThickness="6"
-                  Fill="Transparent"/>
-            <!-- Glow layer behind the fill arc -->
-            <Path x:Name="ArcGlow"
-                  StrokeThickness="14"
-                  StrokeStartLineCap="Round"
-                  StrokeEndLineCap="Round"
-                  Fill="Transparent"
-                  Opacity="0.25">
-                <Path.Stroke>
-                    <SolidColorBrush x:Name="ArcGlowBrush" Color="#FFFFFFFF"/>
-                </Path.Stroke>
-            </Path>
-            <!-- Main fill arc -->
-            <Path x:Name="ArcFill"
-                  StrokeThickness="6"
-                  StrokeStartLineCap="Round"
-                  StrokeEndLineCap="Round"
-                  Fill="Transparent">
-                <Path.Stroke>
-                    <SolidColorBrush x:Name="ArcBrush" Color="#FFFFFFFF"/>
-                </Path.Stroke>
-            </Path>
-        </Canvas>
+            <!-- ── Progress arc canvas — fixed 6px sleek ring ──────── -->
+            <Canvas Width="460" Height="460"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <!-- Track (background ring) -->
+                <Path x:Name="ArcTrack"
+                      Stroke="#10FFFFFF"
+                      StrokeThickness="6"
+                      Fill="Transparent" />
+                <!-- Glow layer behind the fill arc -->
+                <Path x:Name="ArcGlow"
+                      StrokeThickness="14"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Fill="Transparent"
+                      Opacity="0.25">
+                    <Path.Stroke>
+                        <SolidColorBrush x:Name="ArcGlowBrush" Color="#FFFFFFFF" />
+                    </Path.Stroke>
+                </Path>
+                <!-- Main fill arc -->
+                <Path x:Name="ArcFill"
+                      StrokeThickness="6"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Fill="Transparent">
+                    <Path.Stroke>
+                        <SolidColorBrush x:Name="ArcBrush" Color="#FFFFFFFF" />
+                    </Path.Stroke>
+                </Path>
+            </Canvas>
 
-        <!-- ── Subtle outer border ring ────────────────────────── -->
-        <Ellipse Width="462" Height="462"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 Fill="Transparent"
-                 Stroke="#0CFFFFFF"
-                 StrokeThickness="1"
-                 IsHitTestVisible="False"/>
+            <!-- ── Subtle outer border ring ────────────────────────── -->
+            <Ellipse Width="462" Height="462"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Fill="Transparent"
+                     Stroke="#0CFFFFFF"
+                     StrokeThickness="1"
+                     IsHitTestVisible="False" />
 
-        <!-- ── Central content ─────────────────────────────────── -->
-        <StackPanel HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Width="310">
+            <!-- ── Central content ─────────────────────────────────── -->
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Width="310">
 
-            <!-- Emoji icon -->
-            <ContentControl x:Name="IconViewHost"
-                            Width="56" Height="56"
-                            HorizontalAlignment="Center"
-                            IsHitTestVisible="False"
-                            Margin="0,0,0,6"/>
+                <!-- Emoji icon -->
+                <ContentControl x:Name="IconViewHost"
+                                Width="70" Height="70"
+                                HorizontalAlignment="Center"
+                                IsHitTestVisible="False"
+                                Margin="0,0,0,6" />
 
-            <!-- Title -->
-            <ContentControl x:Name="TitleViewHost"
-                            Height="32"
-                            HorizontalAlignment="Stretch"
-                            IsHitTestVisible="False"
-                            Margin="0,0,0,2"/>
+                <!-- Title -->
+                <ContentControl x:Name="TitleViewHost"
+                                Height="32"
+                                HorizontalAlignment="Stretch"
+                                IsHitTestVisible="False"
+                                Margin="0,0,0,2" />
 
-            <!-- Big break countdown -->
-            <TextBlock x:Name="CountdownLabel"
-                       FontFamily="Cascadia Code, JetBrains Mono, Consolas"
-                       FontSize="42"
-                       FontWeight="Light"
-                       Foreground="#FFFFFFFF"
-                       HorizontalAlignment="Center"
-                       Margin="0,2,0,4"/>
+                <!-- Big break countdown -->
+                <TextBlock x:Name="CountdownLabel"
+                           FontFamily="Cascadia Code, JetBrains Mono, Consolas"
+                           FontSize="42"
+                           FontWeight="Light"
+                           Foreground="#FFFFFFFF"
+                           HorizontalAlignment="Center"
+                           Margin="0,2,0,4" />
 
-            <TextBlock x:Name="RemainingLabel"
-                       Text="R E M A I N I N G"
-                       FontFamily="Segoe UI Variable, Segoe UI"
-                       FontSize="10"
-                       FontWeight="Medium"
-                       Foreground="#88FFFFFF"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,16"
-                       TextOptions.TextFormattingMode="Display"/>
+                <TextBlock x:Name="RemainingLabel"
+                           Text="R E M A I N I N G"
+                           FontFamily="Segoe UI Variable, Segoe UI"
+                           FontSize="10"
+                           FontWeight="Medium"
+                           Foreground="#88FFFFFF"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,16"
+                           TextOptions.TextFormattingMode="Display" />
 
-            <!-- Stretch suggestion — frosted glass card -->
-            <Border x:Name="ExerciseCard"
-                    CornerRadius="14"
-                    Padding="14,10"
-                    Margin="0,0,0,18">
-                <Border.Background>
-                    <SolidColorBrush Color="#FFFFFF" Opacity="0.07"/>
-                </Border.Background>
-                <Border.BorderBrush>
-                    <SolidColorBrush Color="#FFFFFF" Opacity="0.10"/>
-                </Border.BorderBrush>
-                <Border.BorderThickness>1</Border.BorderThickness>
-                <ContentControl x:Name="ExerciseViewHost"
-                                Height="90"
-                                IsHitTestVisible="False"/>
-            </Border>
+                <!-- Stretch suggestion — frosted glass card -->
+                <Border x:Name="ExerciseCard"
+                        CornerRadius="14"
+                        Padding="14,10"
+                        Margin="0,0,0,18">
+                    <Border.Background>
+                        <SolidColorBrush Color="#FFFFFF" Opacity="0.07" />
+                    </Border.Background>
+                    <Border.BorderBrush>
+                        <SolidColorBrush Color="#FFFFFF" Opacity="0.10" />
+                    </Border.BorderBrush>
+                    <Border.BorderThickness>1</Border.BorderThickness>
+                    <ContentControl x:Name="ExerciseViewHost"
+                                    Height="90"
+                                    IsHitTestVisible="False" />
+                </Border>
 
-            <!-- Action buttons -->
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center">
-                <Button x:Name="SnoozeBtn"
-                        Content="Snooze"
-                        Width="100" Height="36"
-                        Margin="0,0,10,0"
-                        Style="{StaticResource PillButton}"
-                        Click="Snooze_Click"/>
-                <Button x:Name="Continue"
-                        Content="End Break"
-                        Width="120" Height="36"
-                        Style="{StaticResource PillButton}"
-                        Click="Continue_Click"/>
+                <!-- Action buttons -->
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center">
+                    <Button x:Name="SnoozeBtn"
+                            Content="Snooze"
+                            Width="100" Height="36"
+                            Margin="0,0,10,0"
+                            Style="{StaticResource PillButton}"
+                            Click="Snooze_Click" />
+                    <Button x:Name="Continue"
+                            Content="End Break"
+                            Width="120" Height="36"
+                            Style="{StaticResource PillButton}"
+                            Click="Continue_Click" />
+                </StackPanel>
+
+                <!-- Shortcut hint (RequireShortcut mode) -->
+                <TextBlock x:Name="ShortcutHint"
+                           Text="Ctrl + Shift + B to dismiss"
+                           FontFamily="Segoe UI Variable, Segoe UI"
+                           FontSize="11"
+                           Foreground="#55FFFFFF"
+                           HorizontalAlignment="Center"
+                           Margin="0,12,0,0"
+                           Visibility="Collapsed" />
             </StackPanel>
 
-            <!-- Shortcut hint (RequireShortcut mode) -->
-            <TextBlock x:Name="ShortcutHint"
-                       Text="Ctrl + Shift + B to dismiss"
-                       FontFamily="Segoe UI Variable, Segoe UI"
-                       FontSize="11"
-                       Foreground="#55FFFFFF"
-                       HorizontalAlignment="Center"
-                       Margin="0,12,0,0"
-                       Visibility="Collapsed"/>
-        </StackPanel>
-
-        <!-- Context menu -->
-        <Grid.ContextMenu>
-            <ContextMenu Background="#FF0D1117"
-                         BorderBrush="#18FFFFFF"
-                         Foreground="#FFF0EFF5"
-                         FontFamily="Segoe UI Variable, Segoe UI"
-                         FontSize="13">
-                <MenuItem x:Name="MenuSnooze"   Header="⏰  Snooze"    Click="MenuSnooze_Click"/>
-                <MenuItem x:Name="MenuEndBreak" Header="⏹  End Break"  Click="MenuEndBreak_Click"/>
-            </ContextMenu>
-        </Grid.ContextMenu>
+            <!-- Context menu -->
+            <Grid.ContextMenu>
+                <ContextMenu Background="#FF0D1117"
+                             BorderBrush="#18FFFFFF"
+                             Foreground="#FFF0EFF5"
+                             FontFamily="Segoe UI Variable, Segoe UI"
+                             FontSize="13">
+                    <MenuItem x:Name="MenuSnooze" Header="⏰  Snooze" Click="MenuSnooze_Click" />
+                    <MenuItem x:Name="MenuEndBreak" Header="⏹  End Break" Click="MenuEndBreak_Click" />
+                </ContextMenu>
+            </Grid.ContextMenu>
         </Grid>
     </Grid>
 </Window>

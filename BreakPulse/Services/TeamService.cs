@@ -18,17 +18,16 @@ namespace BreakPulse.Services;
 public class TeamService
 {
     private readonly AppSettings _s;
-    private readonly HttpClient  _http;
-
+    private readonly HttpClient _http;
     private static readonly JsonSerializerOptions _json = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        Converters           = { new JsonStringEnumConverter() }
+        Converters = { new JsonStringEnumConverter() },
     };
 
     public TeamService(AppSettings settings)
     {
-        _s    = settings;
+        _s = settings;
         _http = new HttpClient();
         if (!string.IsNullOrWhiteSpace(settings.TeamApiKey))
             _http.DefaultRequestHeaders.Add("X-Api-Key", settings.TeamApiKey);
@@ -42,22 +41,22 @@ public class TeamService
     {
         if (!_s.TeamTelemetryEnabled || string.IsNullOrWhiteSpace(_s.TeamApiEndpoint))
             return;
-
         var payload = new HeartbeatPayload
         {
-            UserId        = _s.AnonymizeTelemetry ? AnonymousId() : Environment.UserName,
-            DisplayName   = _s.AnonymizeTelemetry ? "Anonymous"   : _s.UserDisplayName,
-            TeamName      = _s.TeamName,
-            SessionSeconds= (int)sessionElapsed.TotalSeconds,
-            OnBreak       = onBreak,
-            Timestamp     = DateTime.UtcNow
+            UserId = _s.AnonymizeTelemetry ? AnonymousId() : Environment.UserName,
+            DisplayName = _s.AnonymizeTelemetry ? "Anonymous" : _s.UserDisplayName,
+            TeamName = _s.TeamName,
+            SessionSeconds = (int)sessionElapsed.TotalSeconds,
+            OnBreak = onBreak,
+            Timestamp = DateTime.UtcNow,
         };
-
         try
         {
             await _http.PostAsJsonAsync($"{_s.TeamApiEndpoint}/heartbeat", payload, _json);
         }
-        catch { /* Non-critical — swallow network errors silently */ }
+        catch
+        { /* Non-critical — swallow network errors silently */
+        }
     }
 
     /// <summary>Fetch all team members' current status from the server.</summary>
@@ -65,10 +64,9 @@ public class TeamService
     {
         if (!_s.TeamTelemetryEnabled || string.IsNullOrWhiteSpace(_s.TeamApiEndpoint))
             return SampleTeamData(); // Return demo data when not configured
-
         try
         {
-            var members = await _http.GetFromJsonAsync<List<TeamMember>>(
+            List<TeamMember>? members = await _http.GetFromJsonAsync<List<TeamMember>>(
                 $"{_s.TeamApiEndpoint}/team", _json);
             return members ?? [];
         }
@@ -81,28 +79,33 @@ public class TeamService
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static string AnonymousId()
-        => Convert.ToHexString(
+    {
+        return Convert.ToHexString(
             System.Security.Cryptography.SHA256.HashData(
                 System.Text.Encoding.UTF8.GetBytes(Environment.MachineName)
             )[..8]);
+    }
 
     /// <summary>Demo data so the Team tab looks useful before API is wired up.</summary>
-    private static List<TeamMember> SampleTeamData() =>
-    [
-        new() { DisplayName = "You",      Initials = "JD", SessionTime = TimeSpan.FromMinutes(35), Status = MemberStatus.Active,   BreaksTaken = 2 },
-        new() { DisplayName = "Priya R.", Initials = "PR", SessionTime = TimeSpan.FromMinutes(74), Status = MemberStatus.Overdue,  BreaksTaken = 1 },
-        new() { DisplayName = "Aditya K.",Initials = "AK", SessionTime = TimeSpan.FromMinutes(48), Status = MemberStatus.DueSoon,  BreaksTaken = 2 },
-        new() { DisplayName = "Sneha M.", Initials = "SM", SessionTime = TimeSpan.FromMinutes(22), Status = MemberStatus.Active,   BreaksTaken = 3 },
-        new() { DisplayName = "Rahul T.", Initials = "RT", SessionTime = TimeSpan.Zero,            Status = MemberStatus.OnBreak,  BreaksTaken = 4 },
-    ];
+    private static List<TeamMember> SampleTeamData()
+    {
+        return
+        [
+            new TeamMember { DisplayName = "You", Initials = "JD", SessionTime = TimeSpan.FromMinutes(35), Status = MemberStatus.Active, BreaksTaken = 2 },
+            new TeamMember { DisplayName = "Priya R.", Initials = "PR", SessionTime = TimeSpan.FromMinutes(74), Status = MemberStatus.Overdue, BreaksTaken = 1 },
+            new TeamMember { DisplayName = "Aditya K.", Initials = "AK", SessionTime = TimeSpan.FromMinutes(48), Status = MemberStatus.DueSoon, BreaksTaken = 2 },
+            new TeamMember { DisplayName = "Sneha M.", Initials = "SM", SessionTime = TimeSpan.FromMinutes(22), Status = MemberStatus.Active, BreaksTaken = 3 },
+            new TeamMember { DisplayName = "Rahul T.", Initials = "RT", SessionTime = TimeSpan.Zero, Status = MemberStatus.OnBreak, BreaksTaken = 4 },
+        ];
+    }
 }
 
 public record HeartbeatPayload
 {
-    public string   UserId         { get; init; } = "";
-    public string   DisplayName    { get; init; } = "";
-    public string   TeamName       { get; init; } = "";
-    public int      SessionSeconds { get; init; }
-    public bool     OnBreak        { get; init; }
-    public DateTime Timestamp      { get; init; }
+    public string UserId { get; init; } = "";
+    public string DisplayName { get; init; } = "";
+    public string TeamName { get; init; } = "";
+    public int SessionSeconds { get; init; }
+    public bool OnBreak { get; init; }
+    public DateTime Timestamp { get; init; }
 }

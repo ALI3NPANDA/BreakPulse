@@ -87,7 +87,8 @@ design the manager dashboard UI first.
 | Add a new HUD position       | `HudPosition` enum + `HudWindow.PlaceOnScreen()` |
 | Swap arc for a progress bar  | Replace `Canvas` in `HudWindow.xaml`    |
 | Play a sound on break        | Add `MediaPlayer` call in `App.OnBreakDue()` |
-| Calendar integration (skip)  | Implement `ICalendarProvider` and inject into `TimerService` |
+| Skip during meetings         | Toggle "Skip during meetings" in Settings (auto-detects Teams, Zoom, etc.) |
+| Custom meeting detection     | Implement `ICalendarProvider`, pass to `TimerService` constructor |
 
 ---
 

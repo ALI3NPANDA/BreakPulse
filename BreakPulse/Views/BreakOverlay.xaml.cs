@@ -12,11 +12,11 @@ namespace BreakPulse.Views;
 
 public partial class BreakOverlay : Window
 {
-    private readonly AppSettings  _s;
+    private readonly AppSettings _s;
     private readonly TimerService _timer;
 
     // ── Arc constants (canvas 460×460, large ring near circle edge) ──────────
-    private const double BreakArcRadius   = 222.0;
+    private const double BreakArcRadius = 222.0;
     private const double BreakArcCenterXY = 230.0; // center of 460×460 canvas
 
     // Windows accent color, read once at construction (fallback for outer glow)
@@ -26,21 +26,19 @@ public partial class BreakOverlay : Window
     private readonly ParticleWaveRenderer _particleRenderer;
 
     // WebView2 instances created in code to avoid XAML assembly-resolution issues
-    private readonly WebView2 _iconView     = new();
-    private readonly WebView2 _titleView    = new();
+    private readonly WebView2 _iconView = new();
+    private readonly WebView2 _titleView = new();
     private readonly WebView2 _exerciseView = new();
-
-    private string _titleHtml    = "";
+    private string _titleHtml = "";
     private string _exerciseHtml = "";
-
+    private readonly string[] _emojis = { "🧘🏻‍♀️", "⏰", "🤯", "🫨", "🧘🏼‍♂️", "🧘🏽", "🧘🏾‍♀️", "🧘🏾", "🧘🏽‍♂️", "🤩", "🫠", "😌", "😤", "😵", "🥵", "😵‍💫", "🤕", "🙂‍↔️", "🙂‍↕️" };
 
     public BreakOverlay(AppSettings settings, TimerService timer)
     {
         InitializeComponent();
         DataContext = this;
-
-        _s           = settings;
-        _timer       = timer;
+        _s = settings;
+        _timer = timer;
 
         // Initialize particle wave background renderer (460×460 to match the circle)
         _particleRenderer = new ParticleWaveRenderer(460, 460);
@@ -51,22 +49,25 @@ public partial class BreakOverlay : Window
             var accentColor = (Color)ColorConverter.ConvertFromString(_s.ParticleAccentColor);
             _particleRenderer.AccentColor = accentColor;
         }
-        catch { /* keep default */ }
-
+        catch
+        { /* keep default */
+        }
         try
         {
             var waveColor = (Color)ColorConverter.ConvertFromString(_s.ParticleWaveColor);
             _particleRenderer.WaveColor = waveColor;
         }
-        catch { /* keep default */ }
-
+        catch
+        { /* keep default */
+        }
         try
         {
             var bgColor = (Color)ColorConverter.ConvertFromString(_s.OverlayBackgroundColor);
             _particleRenderer.BackgroundColor = bgColor;
         }
-        catch { /* keep default */ }
-
+        catch
+        { /* keep default */
+        }
         ParticleBgImage.Source = _particleRenderer.Bitmap;
 
         // ── Fullscreen blocking mode ──────────────────────────────────────────
@@ -76,37 +77,32 @@ public partial class BreakOverlay : Window
         }
 
         // Inject the WebView2 controls into their placeholder slots
-        IconViewHost.Content     = _iconView;
-        TitleViewHost.Content    = _titleView;
+        IconViewHost.Content = _iconView;
+        TitleViewHost.Content = _titleView;
         ExerciseViewHost.Content = _exerciseView;
 
         // Build HTML content
         if (timer.IsLongBreak)
         {
-            _titleHtml        = EmojiHtml("🌟 Long Break Time! 🌟", "#FFFFFF", 25, "600");
+            _titleHtml = EmojiHtml("🌟 Long Break Time! 🌟", "#FFFFFF", 25, "600");
         }
         else
         {
-            _titleHtml        = EmojiHtml("Time to rest", "#FFFFFF", 25, "600");
+            _titleHtml = EmojiHtml("Time to rest", "#FFFFFF", 25, "600");
         }
-
         _exerciseHtml = EmojiHtml(PickRandomExercise(settings.Exercises), "#FFFFFF", 18);
-
         if (settings.RequireShortcut)
         {
             ShortcutHint.Visibility = Visibility.Visible;
-            SnoozeBtn.IsEnabled     = false;
-            Continue.IsEnabled      = false;
+            SnoozeBtn.IsEnabled = false;
+            Continue.IsEnabled = false;
         }
-
         UpdateCountdownLabel(timer.BreakDuration);
-
         _timer.TickOccurred += OnTimerTick;
-        _timer.BreakEnded   += OnBreakEndedExternally;
-
+        _timer.BreakEnded += OnBreakEndedExternally;
         KeyDown += OnKeyDown;
-        Loaded  += OnLoaded;
-        Closed  += OnWindowClosed;
+        Loaded += OnLoaded;
+        Closed += OnWindowClosed;
     }
 
     // ── Fullscreen blocking ─────────────────────────────────────────────────
@@ -115,9 +111,9 @@ public partial class BreakOverlay : Window
     {
         // Span window across all monitors using virtual screen bounds
         WindowStartupLocation = WindowStartupLocation.Manual;
-        Left   = SystemParameters.VirtualScreenLeft;
-        Top    = SystemParameters.VirtualScreenTop;
-        Width  = SystemParameters.VirtualScreenWidth;
+        Left = SystemParameters.VirtualScreenLeft;
+        Top = SystemParameters.VirtualScreenTop;
+        Width = SystemParameters.VirtualScreenWidth;
         Height = SystemParameters.VirtualScreenHeight;
 
         // Show the blocking background
@@ -129,7 +125,6 @@ public partial class BreakOverlay : Window
             BlockingBackground.Background = new SolidColorBrush(blockColor);
         }
         catch { BlockingBackground.Background = new SolidColorBrush(Color.FromRgb(0x40, 0x40, 0x40)); }
-
         Topmost = true;
 
         // Prevent Alt+F4
@@ -154,10 +149,15 @@ public partial class BreakOverlay : Window
     // The gap at 12 o'clock grows clockwise so the arc drains in a clockwise direction.
     private void DrawBreakArc(double progress)
     {
-        var remaining = 1.0 - progress;
-        var sweep     = Math.Max(0, Math.Min(remaining * 360, 359.99));
-        if (sweep < 0.1) { ArcFill.Data = null; ArcGlow.Data = null; return; }
-        var startDeg = Math.Min(progress * 360, 359.99);
+        double remaining = 1.0 - progress;
+        double sweep = Math.Max(0, Math.Min(remaining * 360, 359.99));
+        if (sweep < 0.1)
+        {
+            ArcFill.Data = null;
+            ArcGlow.Data = null;
+            return;
+        }
+        double startDeg = Math.Min(progress * 360, 359.99);
         var geo = BuildArcGeometry(startDeg, sweep);
         ArcFill.Data = geo;
         ArcGlow.Data = geo;
@@ -165,25 +165,22 @@ public partial class BreakOverlay : Window
 
     private static Geometry BuildArcGeometry(double startDeg, double sweepDeg)
     {
-        var startRad = (startDeg - 90) * Math.PI / 180;
-        var endRad   = (startDeg + sweepDeg - 90) * Math.PI / 180;
-
+        double startRad = (startDeg - 90) * Math.PI / 180;
+        double endRad = (startDeg + sweepDeg - 90) * Math.PI / 180;
         var startPt = new Point(
             BreakArcCenterXY + BreakArcRadius * Math.Cos(startRad),
             BreakArcCenterXY + BreakArcRadius * Math.Sin(startRad));
         var endPt = new Point(
             BreakArcCenterXY + BreakArcRadius * Math.Cos(endRad),
             BreakArcCenterXY + BreakArcRadius * Math.Sin(endRad));
-
-        var isLarge = sweepDeg > 180;
-        var figure  = new PathFigure { StartPoint = startPt };
+        bool isLarge = sweepDeg > 180;
+        var figure = new PathFigure { StartPoint = startPt };
         figure.Segments.Add(new ArcSegment(
             endPt,
             new Size(BreakArcRadius, BreakArcRadius),
             0, isLarge,
             SweepDirection.Clockwise,
             true));
-
         var geo = new PathGeometry();
         geo.Figures.Add(figure);
         return geo;
@@ -196,7 +193,7 @@ public partial class BreakOverlay : Window
         // ── Fade-in animation (starts immediately) ───────────────────────────
         var fadeIn = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(700)))
         {
-            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
         };
         BeginAnimation(OpacityProperty, fadeIn);
 
@@ -213,37 +210,40 @@ public partial class BreakOverlay : Window
             // Outer glow tints to accent color
             OuterGlowBrush.GradientStops[0].Color = accentColor;
         }
-        catch { /* keep defaults if color parse fails */ }
-
+        catch
+        { /* keep defaults if color parse fails */
+        }
         try
         {
             var waveColor = (Color)ColorConverter.ConvertFromString(_s.ParticleWaveColor);
             _particleRenderer.WaveColor = waveColor;
         }
-        catch { /* keep defaults if color parse fails */ }
-
+        catch
+        { /* keep defaults if color parse fails */
+        }
         try
         {
             var bgColor = (Color)ColorConverter.ConvertFromString(_s.OverlayBackgroundColor);
             _particleRenderer.BackgroundColor = bgColor;
         }
-        catch { /* keep defaults if color parse fails */ }
+        catch
+        { /* keep defaults if color parse fails */
+        }
 
         // Start the animated particle background
         _particleRenderer.Start();
 
         // White arc always contrasts against the dark gradient
-        ArcBrush.Color            = Colors.White;
-        ArcGlowBrush.Color       = Colors.White;
+        ArcBrush.Color = Colors.White;
+        ArcGlowBrush.Color = Colors.White;
         CountdownLabel.Foreground = new SolidColorBrush(Colors.White);
 
-
         // Apply visibility toggles
-        var countdownVis  = _s.ShowCountdown ? Visibility.Visible : Visibility.Collapsed;
-        CountdownLabel.Visibility  = countdownVis;
-        RemainingLabel.Visibility  = countdownVis;
-        ExerciseCard.Visibility    = _s.ShowExercise ? Visibility.Visible : Visibility.Collapsed;
-        Topmost                    = _s.AlwaysOnTop;
+        var countdownVis = _s.ShowCountdown ? Visibility.Visible : Visibility.Collapsed;
+        CountdownLabel.Visibility = countdownVis;
+        RemainingLabel.Visibility = countdownVis;
+        ExerciseCard.Visibility = _s.ShowExercise ? Visibility.Visible : Visibility.Collapsed;
+        Topmost = _s.AlwaysOnTop;
 
         // ── Progress ring ────────────────────────────────────────────────────
         DrawTrackArc();
@@ -251,23 +251,20 @@ public partial class BreakOverlay : Window
         ArcGlow.Data = ArcFill.Data; // sync glow with fill
 
         // ── WebView2 setup ───────────────────────────────────────────────────
-        _iconView.DefaultBackgroundColor     = System.Drawing.Color.Transparent;
-        _titleView.DefaultBackgroundColor    = System.Drawing.Color.Transparent;
+        _iconView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
+        _titleView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
         _exerciseView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
-
         await Task.WhenAll(
             _iconView.EnsureCoreWebView2Async(),
             _titleView.EnsureCoreWebView2Async(),
             _exerciseView.EnsureCoreWebView2Async());
-
         foreach (var core in new[] { _iconView.CoreWebView2, _titleView.CoreWebView2, _exerciseView.CoreWebView2 })
         {
             core.Settings.AreDefaultContextMenusEnabled = false;
-            core.Settings.AreDevToolsEnabled            = false;
-            core.Settings.IsStatusBarEnabled            = false;
+            core.Settings.AreDevToolsEnabled = false;
+            core.Settings.IsStatusBarEnabled = false;
         }
-
-        _iconView.NavigateToString(EmojiHtml("🧘", "#F0EFF5", 48));
+        _iconView.NavigateToString(EmojiHtml(GetRandomEmoji(), "#F0EFF5", 60));
         _titleView.NavigateToString(_titleHtml);
         _exerciseView.NavigateToString(_exerciseHtml);
     }
@@ -275,7 +272,7 @@ public partial class BreakOverlay : Window
     // Picks a random non-empty exercise; falls back to a default if all are empty.
     private static string PickRandomExercise(IList<string> exercises)
     {
-        var active = exercises.Where(e => !string.IsNullOrWhiteSpace(e)).ToList();
+        List<string> active = exercises.Where(e => !string.IsNullOrWhiteSpace(e)).ToList();
         return active.Count > 0
             ? active[Random.Shared.Next(active.Count)]
             : "🧘 Take a moment to breathe and stretch.";
@@ -284,26 +281,26 @@ public partial class BreakOverlay : Window
     // Builds a transparent-background HTML page that renders color emoji via Chromium.
     private static string EmojiHtml(string text, string color, int fontSize, string fontWeight = "normal")
     {
-        var encoded = WebUtility.HtmlEncode(text);
+        string encoded = WebUtility.HtmlEncode(text);
         return $$"""
-            <!DOCTYPE html>
-            <html><head><meta charset="utf-8"><style>
-              * { margin:0; padding:0; box-sizing:border-box; }
-              html, body {
-                height: 100%;
-                background: transparent;
-                overflow: hidden;
-                font-family: 'Segoe UI Emoji','Segoe UI',sans-serif;
-                font-size: {{fontSize}}px;
-                font-weight: {{fontWeight}};
-                color: {{color}};
-                text-align: center;
-                line-height: 1.45;
-              }
-              body { display:flex; align-items:center; justify-content:center; }
-            </style></head>
-            <body>{{encoded}}</body></html>
-            """;
+                 <!DOCTYPE html>
+                 <html><head><meta charset="utf-8"><style>
+                   * { margin:0; padding:0; box-sizing:border-box; }
+                   html, body {
+                     height: 100%;
+                     background: transparent;
+                     overflow: hidden;
+                     font-family: 'Segoe UI Emoji','Segoe UI',sans-serif;
+                     font-size: {{fontSize}}px;
+                     font-weight: {{fontWeight}};
+                     color: {{color}};
+                     text-align: center;
+                     line-height: 1.45;
+                   }
+                   body { display:flex; align-items:center; justify-content:center; }
+                 </style></head>
+                 <body>{{encoded}}</body></html>
+                 """;
     }
 
     // ── Timer event handlers ──────────────────────────────────────────────────
@@ -320,12 +317,12 @@ public partial class BreakOverlay : Window
                 // Color: white → amber → red as break time runs out
                 var arcColor = progress switch
                 {
-                    < 0.7 => Colors.White,                          // white — plenty of time
-                    < 0.9 => Color.FromRgb(245, 158,  11),          // amber — almost done
-                    _     => Color.FromRgb(239,  68,  68)           // red   — last 10 %
+                    < 0.7 => Colors.White, // white — plenty of time
+                    < 0.9 => Color.FromRgb(245, 158, 11), // amber — almost done
+                    _ => Color.FromRgb(239, 68, 68), // red   — last 10 %
                 };
-                ArcBrush.Color            = arcColor;
-                ArcGlowBrush.Color        = arcColor;
+                ArcBrush.Color = arcColor;
+                ArcGlowBrush.Color = arcColor;
                 CountdownLabel.Foreground = new SolidColorBrush(arcColor);
             });
         }
@@ -333,7 +330,14 @@ public partial class BreakOverlay : Window
 
     private void OnBreakEndedExternally()
     {
-        Dispatcher.Invoke(() => { if (IsVisible) { _closingIntentionally = true; Close(); } });
+        Dispatcher.Invoke(() =>
+        {
+            if (IsVisible)
+            {
+                _closingIntentionally = true;
+                Close();
+            }
+        });
     }
 
     private void UpdateCountdownLabel(TimeSpan remaining)
@@ -346,7 +350,7 @@ public partial class BreakOverlay : Window
     private void OnWindowClosed(object? sender, EventArgs e)
     {
         _timer.TickOccurred -= OnTimerTick;
-        _timer.BreakEnded   -= OnBreakEndedExternally;
+        _timer.BreakEnded -= OnBreakEndedExternally;
         _particleRenderer.Dispose();
     }
 
@@ -374,8 +378,15 @@ public partial class BreakOverlay : Window
         Close();
     }
 
-    private void Continue_Click(object sender, RoutedEventArgs e) => EndBreakAndClose();
-    private void CloseBtn_Click(object sender, RoutedEventArgs e) => EndBreakAndClose();
+    private void Continue_Click(object sender, RoutedEventArgs e)
+    {
+        EndBreakAndClose();
+    }
+
+    private void CloseBtn_Click(object sender, RoutedEventArgs e)
+    {
+        EndBreakAndClose();
+    }
 
     private void MenuSnooze_Click(object sender, RoutedEventArgs e)
     {
@@ -384,12 +395,20 @@ public partial class BreakOverlay : Window
         Close();
     }
 
-    private void MenuEndBreak_Click(object sender, RoutedEventArgs e) => EndBreakAndClose();
+    private void MenuEndBreak_Click(object sender, RoutedEventArgs e)
+    {
+        EndBreakAndClose();
+    }
 
     private void EndBreakAndClose()
     {
         _closingIntentionally = true;
         _timer.EndBreak();
         Close();
+    }
+
+    private string GetRandomEmoji()
+    {
+        return _emojis[Random.Shared.Next(_emojis.Length)];
     }
 }

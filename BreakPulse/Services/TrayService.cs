@@ -20,10 +20,9 @@ public class TrayService : IDisposable
     {
         _statusItem = new System.Windows.Controls.MenuItem
         {
-            Header  = "⏱  --:-- until break",
+            Header = "⏱  --:-- until break",
             //Command = new RelayCommand(_ => onShowHud())
         };
-
         _icon = new TaskbarIcon
         {
             ToolTipText = "BreakPulse",
@@ -33,10 +32,12 @@ public class TrayService : IDisposable
                 ItemsSource = new System.Collections.ObjectModel.ObservableCollection<System.Windows.Controls.MenuItem>
                 {
                     _statusItem,
-                    new System.Windows.Controls.MenuItem { Header = "Settings", Command = new RelayCommand(_ => onShowSettings()) },
-                    new System.Windows.Controls.MenuItem { Header = "Quit BreakPulse", Command = new RelayCommand(_ => onQuit()) }
-                }
-            }
+                    new()
+                        { Header = "Settings", Command = new RelayCommand(_ => onShowSettings()) },
+                    new()
+                        { Header = "Quit BreakPulse", Command = new RelayCommand(_ => onQuit()) },
+                },
+            },
         };
     }
 
