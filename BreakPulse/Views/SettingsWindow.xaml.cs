@@ -157,8 +157,8 @@ public partial class SettingsWindow : Window
         PreWarnSlider.Value = _s.PreWarningMinutes;
         SkipMeetingsToggle.IsChecked = _s.SkipDuringMeetings;
         IdleToggle.IsChecked = _s.DetectIdle;
-        AdaptiveToggle.IsChecked = _s.AdaptiveBreaks;
         AutoResumeToggle.IsChecked = _s.AutoResume;
+        LaunchOnStartupToggle.IsChecked = _s.LaunchOnStartup;
 
         // Alerts tab
         SoundToggle.IsChecked = _s.PlaySound;
@@ -261,10 +261,10 @@ public partial class SettingsWindow : Window
         _s.SessionsBeforeLong = (int)LongBreakSlider.Value;
         _s.LongBreakMinutes = (int)LongBreakDurSlider.Value;
         _s.PreWarningMinutes = (int)PreWarnSlider.Value;
-        _s.SkipDuringMeetings = SkipMeetingsToggle.IsChecked == true;
-        _s.DetectIdle = IdleToggle.IsChecked == true;
-        _s.AdaptiveBreaks = AdaptiveToggle.IsChecked == true;
-        _s.AutoResume = AutoResumeToggle.IsChecked == true;
+         _s.SkipDuringMeetings = SkipMeetingsToggle.IsChecked == true;
+         _s.DetectIdle = IdleToggle.IsChecked == true;
+         _s.AutoResume = AutoResumeToggle.IsChecked == true;
+         _s.LaunchOnStartup = LaunchOnStartupToggle.IsChecked == true;
 
         // Alerts
         _s.PlaySound = SoundToggle.IsChecked == true;
@@ -294,6 +294,9 @@ public partial class SettingsWindow : Window
         // _s.AnonymizeTelemetry = AnonToggle.IsChecked == true;
         // _s.ManagerDashboardEnabled = ManagerToggle.IsChecked == true;
         // _s.PushToSlack = SlackToggle.IsChecked == true;
+
+        // Apply Windows startup registry entry
+        StartupService.SetLaunchOnStartup(_s.LaunchOnStartup);
 
         // Persist & apply live
         _s.Save();

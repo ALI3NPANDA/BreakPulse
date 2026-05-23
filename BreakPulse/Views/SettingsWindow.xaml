@@ -191,25 +191,28 @@
                                     </DockPanel>
                                 </Border>
 
-                                <Border Style="{StaticResource SettingCard}">
-                                    <DockPanel>
-                                        <ToggleButton x:Name="AdaptiveToggle" DockPanel.Dock="Right"
-                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
-                                        <TextBlock Text="Adaptive breaks" Style="{StaticResource Body}"
-                                                   VerticalAlignment="Center" />
-                                    </DockPanel>
-                                </Border>
 
-                                <Border Style="{StaticResource SettingCard}">
-                                    <DockPanel>
-                                        <ToggleButton x:Name="AutoResumeToggle" DockPanel.Dock="Right"
-                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
-                                        <TextBlock Text="Auto-resume after break" Style="{StaticResource Body}"
-                                                   VerticalAlignment="Center" />
-                                    </DockPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
+                                 <Border Style="{StaticResource SettingCard}">
+                                     <DockPanel>
+                                         <ToggleButton x:Name="AutoResumeToggle" DockPanel.Dock="Right"
+                                                       Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                         <TextBlock Text="Auto-resume after break" Style="{StaticResource Body}"
+                                                    VerticalAlignment="Center" />
+                                     </DockPanel>
+                                 </Border>
+
+                                 <TextBlock Text="System" Style="{StaticResource H2}" Margin="0,20,0,12" />
+
+                                 <Border Style="{StaticResource SettingCard}">
+                                     <DockPanel>
+                                         <ToggleButton x:Name="LaunchOnStartupToggle" DockPanel.Dock="Right"
+                                                       Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                         <TextBlock Text="Launch on Windows startup" Style="{StaticResource Body}"
+                                                    VerticalAlignment="Center" />
+                                     </DockPanel>
+                                 </Border>
+                             </StackPanel>
+                         </ScrollViewer>
 
                         <!-- ═══ Alerts Page ═══ -->
                         <ScrollViewer x:Name="AlertsPage" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">

@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.IO;
 using BreakPulse.Models;
 using Hardcodet.Wpf.TaskbarNotification;
 
@@ -54,6 +55,21 @@ public class TrayService : IDisposable
 
     private static Icon LoadIcon()
     {
+        try
+        {
+            // Try to load the icon from the Assets folder
+            var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "icon.ico");
+            if (File.Exists(iconPath))
+            {
+                return new Icon(iconPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to load icon from file: {ex.Message}");
+        }
+
+        // Fallback: create a default purple circle icon if file not found
         var bmp = new Bitmap(32, 32);
         using var g = Graphics.FromImage(bmp);
         g.FillEllipse(new SolidBrush(Color.FromArgb(108, 99, 255)), 2, 2, 28, 28);

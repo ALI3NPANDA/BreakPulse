@@ -17,7 +17,6 @@ public class AppSettings
     public bool SkipDuringMeetings { get; set; } = true;
     public bool DetectIdle { get; set; } = true;
     public int IdleThresholdSecs { get; set; } = 120;
-    public bool AdaptiveBreaks { get; set; } = false;
     public bool AutoResume { get; set; } = true;
 
     // ── Alerts ────────────────────────────────────────────────────────────────
@@ -40,6 +39,9 @@ public class AppSettings
     };
     public bool RequireShortcut { get; set; } = false;
     public bool BlockScreenOnBreak { get; set; } = false;
+
+    // ── Startup ───────────────────────────────────────────────────────────────
+    public bool LaunchOnStartup { get; set; } = false;
 
     // ── Display ───────────────────────────────────────────────────────────────
     public HudPosition Position { get; set; } = HudPosition.Center;
