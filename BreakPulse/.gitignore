@@ -110,6 +110,5 @@ yarn-error.log
 *.jpg
 *.jpeg
 *.gif
-*.ico
 *.exe
 *.dll
