@@ -98,7 +98,8 @@ public class WindowsCalendarProvider : ICalendarProvider
     }
 
     /// <summary>
-    /// Check if any known meeting application is running.
+    /// Check if any known meeting application is running with an active meeting.
+    /// Only returns true if there's evidence of an actual meeting in progress.
     /// </summary>
     private bool CheckRunningMeetingApps()
     {
@@ -114,9 +115,27 @@ public class WindowsCalendarProvider : ICalendarProvider
                     // Check for Teams specifically - it's the most common enterprise meeting app
                     if (processName.Contains("teams"))
                     {
-                        // Check if Teams window is visible/active
+                        // Only consider Teams as "in meeting" if window title indicates active meeting
+                        // Just having Teams open doesn't mean an active meeting is happening
                         if (proc.MainWindowHandle != IntPtr.Zero)
-                            return true;
+                        {
+                            try
+                            {
+                                string windowTitle = GetWindowTitle(proc.MainWindowHandle)?.ToLowerInvariant() ?? "";
+                                // Check for keywords that indicate an active Teams meeting
+                                if (windowTitle.Contains("meeting") || 
+                                    windowTitle.Contains("conference") ||
+                                    windowTitle.Contains("call") ||
+                                    windowTitle.Contains("webinar") ||
+                                    windowTitle.Contains("presenting") ||
+                                    windowTitle.Contains("on a call"))
+                                    return true;
+                            }
+                            catch
+                            {
+                                // If we can't get the window title, assume no active meeting
+                            }
+                        }
                     }
                 }
                 catch

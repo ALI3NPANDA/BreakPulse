@@ -213,7 +213,7 @@ public class TimerService
                 {
                     // User is in a meeting — extend the session by snoozing instead of firing BreakDue
                     // Reset elapsed time to give them another 5 minutes before the next break prompt
-                    _elapsed = _sessionLength - TimeSpan.FromMinutes(5);
+                    _elapsed = _sessionLength - TimeSpan.FromMinutes(2);
                     _preWarnFired = false; // Reset pre-warning in case they extended into warning zone
                     _breakDueFired = false;
                     // Don't fire BreakDue — the break is skipped
