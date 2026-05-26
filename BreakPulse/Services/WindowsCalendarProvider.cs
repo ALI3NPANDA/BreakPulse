@@ -1,30 +1,15 @@
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-
 namespace BreakPulse.Services;
 
 /// <summary>
-/// Detects meetings/appointments by checking Windows Calendar and active applications.
+/// Detects meetings/appointments by checking if meeting apps are actively using mic/camera.
 /// </summary>
 public class WindowsCalendarProvider : ICalendarProvider
 {
-    // Win32 API to get the foreground window
-    [DllImport("user32.dll")]
-    private static extern IntPtr GetForegroundWindow();
-
-    [DllImport("user32.dll", SetLastError = true)]
-    private static extern int GetWindowTextLength(IntPtr hWnd);
-
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    private static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder lpString, int nMaxCount);
-
-    [DllImport("user32.dll")]
-    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-    // Common meeting application process names
+    // Common meeting application process names and registry identifiers
     private static readonly string[] MeetingAppNames = new[]
     {
-        "teams",           // Microsoft Teams
+        "teams",           // Microsoft Teams (classic and new)
+        "msteams",         // New Microsoft Teams (packaged app registry name)
         "outlook",         // Outlook (calendar/meeting)
         "zoom",            // Zoom
         "googlemeet",      // Google Meet
@@ -40,136 +25,98 @@ public class WindowsCalendarProvider : ICalendarProvider
 
     /// <summary>
     /// Check if a meeting is currently in progress by analyzing active applications.
-    /// Works during screen sharing and when viewing shared screens.
+    /// Uses mic/camera usage as the primary reliable indicator.
     /// </summary>
     public bool IsInMeeting()
     {
         try
         {
-            // Get the foreground window (the currently focused application)
-            IntPtr fgWindow = GetForegroundWindow();
-            if (fgWindow == IntPtr.Zero)
-                return false;
-
-            // Get the process ID of the foreground window
-            GetWindowThreadProcessId(fgWindow, out uint processId);
-            if (processId == 0)
-                return false;
-
-            // Get the process and its name
-            try
-            {
-                Process? proc = Process.GetProcessById((int)processId);
-                if (proc == null)
-                    return false;
-
-                string processName = proc.ProcessName.ToLowerInvariant();
-
-                // Check if the foreground app is a known meeting application
-                // This works even when sharing screen because the meeting app stays in focus
-                if (MeetingAppNames.Any(app => processName.Contains(app)))
-                    return true;
-
-                // Also check if the window title suggests a meeting
-                // This catches edge cases and confirms meeting status
-                string windowTitle = GetWindowTitle(fgWindow)?.ToLowerInvariant() ?? "";
-                if (windowTitle.Contains("meeting") || 
-                    windowTitle.Contains("conference") ||
-                    windowTitle.Contains("call") ||
-                    windowTitle.Contains("webinar") ||
-                    windowTitle.Contains("presenting"))  // Added "presenting" for presenter mode
-                    return true;
-            }
-            catch
-            {
-                // If we can't get process info, continue to fallback check
-            }
-
-            // Fallback: Check if any meeting app is running in the background
-            // This covers cases where user switches away from meeting app briefly
-            // Also important for screen sharing where app may lose focus temporarily
-            return CheckRunningMeetingApps();
+            // Check if a meeting app is actively using the microphone or camera.
+            // This is the most reliable indicator regardless of window title.
+            // When the meeting ends, Windows updates LastUsedTimeStop to non-zero.
+            return IsMeetingAppUsingMediaDevice();
         }
         catch
         {
-            // On any error, assume no meeting (fail-safe to not interfere with meetings)
             return false;
         }
     }
 
     /// <summary>
-    /// Check if any known meeting application is running with an active meeting.
-    /// Only returns true if there's evidence of an actual meeting in progress.
+    /// Checks if a meeting app is actively using the microphone or camera,
+    /// which reliably indicates an active meeting regardless of window title.
     /// </summary>
-    private bool CheckRunningMeetingApps()
+    private bool IsMeetingAppUsingMediaDevice()
     {
         try
         {
-            Process[] processes = Process.GetProcesses();
-            foreach (var proc in processes)
+            string[] registryPaths = new[]
             {
-                try
-                {
-                    string processName = proc.ProcessName.ToLowerInvariant();
-                    
-                    // Check for Teams specifically - it's the most common enterprise meeting app
-                    if (processName.Contains("teams"))
-                    {
-                        // Only consider Teams as "in meeting" if window title indicates active meeting
-                        // Just having Teams open doesn't mean an active meeting is happening
-                        if (proc.MainWindowHandle != IntPtr.Zero)
-                        {
-                            try
-                            {
-                                string windowTitle = GetWindowTitle(proc.MainWindowHandle)?.ToLowerInvariant() ?? "";
-                                // Check for keywords that indicate an active Teams meeting
-                                if (windowTitle.Contains("meeting") || 
-                                    windowTitle.Contains("conference") ||
-                                    windowTitle.Contains("call") ||
-                                    windowTitle.Contains("webinar") ||
-                                    windowTitle.Contains("presenting") ||
-                                    windowTitle.Contains("on a call"))
-                                    return true;
-                            }
-                            catch
-                            {
-                                // If we can't get the window title, assume no active meeting
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                    // Ignore individual process errors
-                }
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone",
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam"
+            };
+
+            foreach (var basePath in registryPaths)
+            {
+                if (CheckMediaRegistryKey(Microsoft.Win32.Registry.CurrentUser, basePath))
+                    return true;
+                if (CheckMediaRegistryKey(Microsoft.Win32.Registry.LocalMachine, basePath))
+                    return true;
             }
         }
         catch
         {
-            // On any error checking processes, return false
+            // Registry access failed, fall through
         }
         return false;
     }
 
-    /// <summary>
-    /// Get the window title for a given window handle.
-    /// </summary>
-    private string? GetWindowTitle(IntPtr hWnd)
+    private bool CheckMediaRegistryKey(Microsoft.Win32.RegistryKey root, string basePath)
     {
-        try
-        {
-            int length = GetWindowTextLength(hWnd);
-            if (length == 0)
-                return null;
+        using var key = root.OpenSubKey(basePath);
+        if (key == null) return false;
 
-            var sb = new System.Text.StringBuilder(length + 1);
-            GetWindowText(hWnd, sb, sb.Capacity);
-            return sb.ToString();
-        }
-        catch
+        foreach (var subKeyName in key.GetSubKeyNames())
         {
-            return null;
+            if (subKeyName == "NonPackaged")
+            {
+                using var nonPackagedKey = key.OpenSubKey("NonPackaged");
+                if (nonPackagedKey == null) continue;
+
+                foreach (var appKey in nonPackagedKey.GetSubKeyNames())
+                {
+                    string appLower = appKey.ToLowerInvariant();
+                    if (MeetingAppNames.Any(app => appLower.Contains(app)))
+                    {
+                        if (IsDeviceCurrentlyInUse(nonPackagedKey, appKey))
+                            return true;
+                    }
+                }
+            }
+            else
+            {
+                string subLower = subKeyName.ToLowerInvariant();
+                if (MeetingAppNames.Any(app => subLower.Contains(app)))
+                {
+                    if (IsDeviceCurrentlyInUse(key, subKeyName))
+                        return true;
+                }
+            }
         }
+        return false;
     }
-}
+
+    private static bool IsDeviceCurrentlyInUse(Microsoft.Win32.RegistryKey parentKey, string subKeyName)
+    {
+        using var appSubKey = parentKey.OpenSubKey(subKeyName);
+        var lastUsedStop = appSubKey?.GetValue("LastUsedTimeStop");
+        // LastUsedTimeStop == 0 means the device is currently in use
+        if (lastUsedStop is long stopLong && stopLong == 0)
+            return true;
+        if (lastUsedStop is int stopInt && stopInt == 0)
+            return true;
+        return false;
+    }
+
+    }
 
