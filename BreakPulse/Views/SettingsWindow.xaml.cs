@@ -161,7 +161,7 @@ public partial class SettingsWindow : Window
         LaunchOnStartupToggle.IsChecked = _s.LaunchOnStartup;
 
         // Alerts tab
-        SoundToggle.IsChecked = _s.PlaySound;
+        //SoundToggle.IsChecked = _s.PlaySound;
         ShortcutToggle.IsChecked = _s.RequireShortcut;
         BlockScreenToggle.IsChecked = _s.BlockScreenOnBreak;
 
@@ -178,10 +178,11 @@ public partial class SettingsWindow : Window
         WaveColorBox.Text = _s.ParticleWaveColor;
         BlockColorBox.Text = _s.BlockScreenColor;
         BlockOpacitySlider.Value = _s.BlockScreenOpacity * 100;
-        ArcToggle.IsChecked = _s.ShowProgressArc;
+        //ArcToggle.IsChecked = _s.ShowProgressArc;
         ShowCountdownToggle.IsChecked = _s.ShowCountdown;
         ShowExerciseToggle.IsChecked = _s.ShowExercise;
         TopMostToggle.IsChecked = _s.AlwaysOnTop;
+        HighQualityAnimToggle.IsChecked = _s.UseHighQualityAnimation;
 
         // Team tab
         // TelemetryToggle.IsChecked = _s.TeamTelemetryEnabled;
@@ -267,7 +268,7 @@ public partial class SettingsWindow : Window
          _s.LaunchOnStartup = LaunchOnStartupToggle.IsChecked == true;
 
         // Alerts
-        _s.PlaySound = SoundToggle.IsChecked == true;
+        //_s.PlaySound = SoundToggle.IsChecked == true;
         _s.RequireShortcut = ShortcutToggle.IsChecked == true;
         _s.BlockScreenOnBreak = BlockScreenToggle.IsChecked == true;
 
@@ -281,10 +282,11 @@ public partial class SettingsWindow : Window
         _s.ParticleWaveColor = WaveColorBox.Text.Trim();
         _s.BlockScreenColor = BlockColorBox.Text.Trim();
         _s.BlockScreenOpacity = BlockOpacitySlider.Value / 100.0;
-        _s.ShowProgressArc = ArcToggle.IsChecked == true;
+        //_s.ShowProgressArc = ArcToggle.IsChecked == true;
         _s.ShowCountdown = ShowCountdownToggle.IsChecked == true;
         _s.ShowExercise = ShowExerciseToggle.IsChecked == true;
         _s.AlwaysOnTop = TopMostToggle.IsChecked == true;
+        _s.UseHighQualityAnimation = HighQualityAnimToggle.IsChecked == true;
 
         // Team
         // _s.TeamTelemetryEnabled = TelemetryToggle.IsChecked == true;

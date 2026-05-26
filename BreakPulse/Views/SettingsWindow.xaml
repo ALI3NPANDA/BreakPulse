@@ -231,7 +231,7 @@
                                 </Border>
 
                                 <TextBlock Text="Behaviour" Style="{StaticResource H2}" Margin="0,20,0,12" />
-
+<!--
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
                                         <ToggleButton x:Name="SoundToggle" DockPanel.Dock="Right"
@@ -239,22 +239,13 @@
                                         <TextBlock Text="Play a sound on break" Style="{StaticResource Body}"
                                                    VerticalAlignment="Center" />
                                     </DockPanel>
-                                </Border>
+                                </Border> -->
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
                                         <ToggleButton x:Name="ShortcutToggle" DockPanel.Dock="Right"
                                                       Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
                                         <TextBlock Text="Require Ctrl+Shift+B to dismiss" Style="{StaticResource Body}"
-                                                   VerticalAlignment="Center" />
-                                    </DockPanel>
-                                </Border>
-
-                                <Border Style="{StaticResource SettingCard}">
-                                    <DockPanel>
-                                        <ToggleButton x:Name="BlockScreenToggle" DockPanel.Dock="Right"
-                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
-                                        <TextBlock Text="Block screen during break" Style="{StaticResource Body}"
                                                    VerticalAlignment="Center" />
                                     </DockPanel>
                                 </Border>
@@ -336,6 +327,14 @@
                                 <!-- Block screen color picker -->
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
+                                        <ToggleButton x:Name="BlockScreenToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Block screen during break" Style="{StaticResource Body}"
+                                                   VerticalAlignment="Center" />
+                                    </DockPanel>
+                                </Border>
+                                <Border Style="{StaticResource SettingCard}">
+                                    <DockPanel>
                                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
                                                     VerticalAlignment="Center">
                                             <Border x:Name="BlockColorPreview" Width="28" Height="28" CornerRadius="6"
@@ -367,7 +366,7 @@
                                                 Margin="0,8,0,0" ValueChanged="BlockOpacitySlider_ValueChanged" />
                                     </StackPanel>
                                 </Border>
-
+<!--
                                 <TextBlock Text="Progress arc" Style="{StaticResource H2}" Margin="0,20,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
@@ -377,9 +376,21 @@
                                         <TextBlock Text="Show progress arc" Style="{StaticResource Body}"
                                                    VerticalAlignment="Center" />
                                     </DockPanel>
-                                </Border>
+                                </Border> -->
 
                                 <TextBlock Text="Break experience" Style="{StaticResource H2}" Margin="0,20,0,12" />
+
+                                <Border Style="{StaticResource SettingCard}">
+                                    <DockPanel>
+                                        <ToggleButton x:Name="HighQualityAnimToggle" DockPanel.Dock="Right"
+                                                      Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center" />
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="High quality animation" Style="{StaticResource Body}" />
+                                            <TextBlock Text="Uses more CPU/RAM. Disable for low-power systems."
+                                                       Style="{StaticResource Caption}" Margin="0,2,0,0" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>

@@ -61,6 +61,7 @@ public class AppSettings
     public double ArcThickness { get; set; } = 4.0;
     public bool ShowCountdown { get; set; } = true;
     public bool ShowExercise { get; set; } = true;
+    public bool UseHighQualityAnimation { get; set; } = false;
 
     // ── Team / Enterprise ─────────────────────────────────────────────────────
     public bool TeamTelemetryEnabled { get; set; } = false;

@@ -22,8 +22,9 @@ public partial class BreakOverlay : Window
     // Windows accent color, read once at construction (fallback for outer glow)
     // Note: particle colors are driven entirely by user settings now
 
-    // Particle wave animated background renderer
-    private readonly ParticleWaveRenderer _particleRenderer;
+    // Background renderers (only one is active based on settings)
+    private readonly ParticleWaveRenderer? _particleRenderer;
+    private readonly LightweightBackgroundRenderer? _lightRenderer;
 
     // WebView2 instances created in code to avoid XAML assembly-resolution issues
     private readonly WebView2 _iconView = new();
@@ -40,35 +41,19 @@ public partial class BreakOverlay : Window
         _s = settings;
         _timer = timer;
 
-        // Initialize particle wave background renderer (460×460 to match the circle)
-        _particleRenderer = new ParticleWaveRenderer(460, 460);
-
-        // Apply all three particle colors from user settings
-        try
+        // Initialize background renderer (460×460 to match the circle)
+        if (_s.UseHighQualityAnimation)
         {
-            var accentColor = (Color)ColorConverter.ConvertFromString(_s.ParticleAccentColor);
-            _particleRenderer.AccentColor = accentColor;
+            _particleRenderer = new ParticleWaveRenderer(460, 460);
+            ApplyColorsToRenderer(_particleRenderer);
+            ParticleBgImage.Source = _particleRenderer.Bitmap;
         }
-        catch
-        { /* keep default */
-        }
-        try
+        else
         {
-            var waveColor = (Color)ColorConverter.ConvertFromString(_s.ParticleWaveColor);
-            _particleRenderer.WaveColor = waveColor;
+            _lightRenderer = new LightweightBackgroundRenderer(460, 460);
+            ApplyColorsToLightRenderer(_lightRenderer);
+            ParticleBgImage.Source = _lightRenderer.Bitmap;
         }
-        catch
-        { /* keep default */
-        }
-        try
-        {
-            var bgColor = (Color)ColorConverter.ConvertFromString(_s.OverlayBackgroundColor);
-            _particleRenderer.BackgroundColor = bgColor;
-        }
-        catch
-        { /* keep default */
-        }
-        ParticleBgImage.Source = _particleRenderer.Bitmap;
 
         // ── Fullscreen blocking mode ──────────────────────────────────────────
         if (_s.BlockScreenOnBreak)
@@ -202,36 +187,25 @@ public partial class BreakOverlay : Window
         pulse.Begin();
 
         // ── Apply colors ─────────────────────────────────────────────────────
-        // Re-apply all three particle colors from settings right before Start()
+        // Apply accent color to outer glow
         try
         {
             var accentColor = (Color)ColorConverter.ConvertFromString(_s.ParticleAccentColor);
-            _particleRenderer.AccentColor = accentColor;
-            // Outer glow tints to accent color
             OuterGlowBrush.GradientStops[0].Color = accentColor;
         }
-        catch
-        { /* keep defaults if color parse fails */
-        }
-        try
-        {
-            var waveColor = (Color)ColorConverter.ConvertFromString(_s.ParticleWaveColor);
-            _particleRenderer.WaveColor = waveColor;
-        }
-        catch
-        { /* keep defaults if color parse fails */
-        }
-        try
-        {
-            var bgColor = (Color)ColorConverter.ConvertFromString(_s.OverlayBackgroundColor);
-            _particleRenderer.BackgroundColor = bgColor;
-        }
-        catch
-        { /* keep defaults if color parse fails */
-        }
+        catch { /* keep defaults */ }
 
-        // Start the animated particle background
-        _particleRenderer.Start();
+        // Start the active background renderer
+        if (_particleRenderer != null)
+        {
+            ApplyColorsToRenderer(_particleRenderer);
+            _particleRenderer.Start();
+        }
+        else if (_lightRenderer != null)
+        {
+            ApplyColorsToLightRenderer(_lightRenderer);
+            _lightRenderer.Start();
+        }
 
         // White arc always contrasts against the dark gradient
         ArcBrush.Color = Colors.White;
@@ -345,13 +319,30 @@ public partial class BreakOverlay : Window
         CountdownLabel.Text = $"{(int)remaining.TotalMinutes:D2}:{remaining.Seconds:D2}";
     }
 
+    // ── Color helpers ────────────────────────────────────────────────────────
+
+    private void ApplyColorsToRenderer(ParticleWaveRenderer renderer)
+    {
+        try { renderer.AccentColor = (Color)ColorConverter.ConvertFromString(_s.ParticleAccentColor); } catch { }
+        try { renderer.WaveColor = (Color)ColorConverter.ConvertFromString(_s.ParticleWaveColor); } catch { }
+        try { renderer.BackgroundColor = (Color)ColorConverter.ConvertFromString(_s.OverlayBackgroundColor); } catch { }
+    }
+
+    private void ApplyColorsToLightRenderer(LightweightBackgroundRenderer renderer)
+    {
+        try { renderer.AccentColor = (Color)ColorConverter.ConvertFromString(_s.ParticleAccentColor); } catch { }
+        try { renderer.WaveColor = (Color)ColorConverter.ConvertFromString(_s.ParticleWaveColor); } catch { }
+        try { renderer.BackgroundColor = (Color)ColorConverter.ConvertFromString(_s.OverlayBackgroundColor); } catch { }
+    }
+
     // ── Cleanup ───────────────────────────────────────────────────────────────
 
     private void OnWindowClosed(object? sender, EventArgs e)
     {
         _timer.TickOccurred -= OnTimerTick;
         _timer.BreakEnded -= OnBreakEndedExternally;
-        _particleRenderer.Dispose();
+        _particleRenderer?.Dispose();
+        _lightRenderer?.Dispose();
     }
 
     // ── Input ─────────────────────────────────────────────────────────────────
