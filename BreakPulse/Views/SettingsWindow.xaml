@@ -105,7 +105,7 @@
                                             <TextBlock Text="Session length" Style="{StaticResource Body}"
                                                        VerticalAlignment="Center" />
                                         </DockPanel>
-                                        <Slider x:Name="SessionSlider" Minimum="0" Maximum="120" TickFrequency="1"
+                                        <Slider x:Name="SessionSlider" Minimum="1" Maximum="120" TickFrequency="1"
                                                 IsSnapToTickEnabled="True" Style="{StaticResource ThinSlider}"
                                                 Margin="0,8,0,0" ValueChanged="SessionSlider_ValueChanged" />
                                     </StackPanel>

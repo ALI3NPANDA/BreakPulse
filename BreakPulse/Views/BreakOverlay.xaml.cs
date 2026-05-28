@@ -27,9 +27,9 @@ public partial class BreakOverlay : Window
     private readonly LightweightBackgroundRenderer? _lightRenderer;
 
     // WebView2 instances created in code to avoid XAML assembly-resolution issues
-    private readonly WebView2 _iconView = new();
-    private readonly WebView2 _titleView = new();
-    private readonly WebView2 _exerciseView = new();
+    private WebView2? _iconView;
+    private WebView2? _titleView;
+    private WebView2? _exerciseView;
     private string _titleHtml = "";
     private string _exerciseHtml = "";
     private readonly string[] _emojis = { "🧘🏻‍♀️", "⏰", "🤯", "🫨", "🧘🏼‍♂️", "🧘🏽", "🧘🏾‍♀️", "🧘🏾", "🧘🏽‍♂️", "🤩", "🫠", "😌", "😤", "😵", "🥵", "😵‍💫", "🤕", "🙂‍↔️", "🙂‍↕️" };
@@ -62,9 +62,23 @@ public partial class BreakOverlay : Window
         }
 
         // Inject the WebView2 controls into their placeholder slots
-        IconViewHost.Content = _iconView;
-        TitleViewHost.Content = _titleView;
-        ExerciseViewHost.Content = _exerciseView;
+        try
+        {
+            _iconView = new WebView2();
+            _titleView = new WebView2();
+            _exerciseView = new WebView2();
+            IconViewHost.Content = _iconView;
+            TitleViewHost.Content = _titleView;
+            ExerciseViewHost.Content = _exerciseView;
+        }
+        catch
+        {
+            // WebView2 assembly or COM registration may be missing on some machines.
+            // OnLoaded fallback will handle content display.
+            _iconView = null;
+            _titleView = null;
+            _exerciseView = null;
+        }
 
         // Build HTML content
         if (timer.IsLongBreak)
@@ -225,22 +239,39 @@ public partial class BreakOverlay : Window
         ArcGlow.Data = ArcFill.Data; // sync glow with fill
 
         // ── WebView2 setup ───────────────────────────────────────────────────
-        _iconView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
-        _titleView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
-        _exerciseView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
-        await Task.WhenAll(
-            _iconView.EnsureCoreWebView2Async(),
-            _titleView.EnsureCoreWebView2Async(),
-            _exerciseView.EnsureCoreWebView2Async());
-        foreach (var core in new[] { _iconView.CoreWebView2, _titleView.CoreWebView2, _exerciseView.CoreWebView2 })
+        if (_iconView != null && _titleView != null && _exerciseView != null)
         {
-            core.Settings.AreDefaultContextMenusEnabled = false;
-            core.Settings.AreDevToolsEnabled = false;
-            core.Settings.IsStatusBarEnabled = false;
+            try
+            {
+                _iconView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
+                _titleView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
+                _exerciseView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
+                await Task.WhenAll(
+                    _iconView.EnsureCoreWebView2Async(),
+                    _titleView.EnsureCoreWebView2Async(),
+                    _exerciseView.EnsureCoreWebView2Async());
+                foreach (var core in new[] { _iconView.CoreWebView2, _titleView.CoreWebView2, _exerciseView.CoreWebView2 })
+                {
+                    core.Settings.AreDefaultContextMenusEnabled = false;
+                    core.Settings.AreDevToolsEnabled = false;
+                    core.Settings.IsStatusBarEnabled = false;
+                }
+                _iconView.NavigateToString(EmojiHtml(GetRandomEmoji(), "#F0EFF5", 60));
+                _titleView.NavigateToString(_titleHtml);
+                _exerciseView.NavigateToString(_exerciseHtml);
+            }
+            catch
+            {
+                // WebView2 runtime unavailable or failed to initialize (common on some laptops).
+                // Fall back to plain TextBlock content so the overlay still works.
+                ApplyTextFallback();
+            }
         }
-        _iconView.NavigateToString(EmojiHtml(GetRandomEmoji(), "#F0EFF5", 60));
-        _titleView.NavigateToString(_titleHtml);
-        _exerciseView.NavigateToString(_exerciseHtml);
+        else
+        {
+            // WebView2 controls couldn't be created — use TextBlock fallback.
+            ApplyTextFallback();
+        }
     }
 
     // Picks a random non-empty exercise; falls back to a default if all are empty.
@@ -278,6 +309,38 @@ public partial class BreakOverlay : Window
     }
 
     // ── Timer event handlers ──────────────────────────────────────────────────
+
+    private void ApplyTextFallback()
+    {
+        IconViewHost.Content = new System.Windows.Controls.TextBlock
+        {
+            Text = GetRandomEmoji(),
+            FontSize = 48,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextAlignment = System.Windows.TextAlignment.Center
+        };
+        TitleViewHost.Content = new System.Windows.Controls.TextBlock
+        {
+            Text = _timer.IsLongBreak ? "🌟 Long Break Time! 🌟" : "Time to rest",
+            FontSize = 22,
+            FontWeight = FontWeights.SemiBold,
+            Foreground = new SolidColorBrush(Colors.White),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextAlignment = System.Windows.TextAlignment.Center
+        };
+        ExerciseViewHost.Content = new System.Windows.Controls.TextBlock
+        {
+            Text = PickRandomExercise(_s.Exercises),
+            FontSize = 15,
+            Foreground = new SolidColorBrush(Colors.White),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextAlignment = System.Windows.TextAlignment.Center,
+            TextWrapping = TextWrapping.Wrap
+        };
+    }
 
     private void OnTimerTick(TimeSpan remaining, double progress)
     {
