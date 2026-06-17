@@ -378,8 +378,7 @@
                                     </DockPanel>
                                 </Border> -->
 
-                                <TextBlock Text="Break experience" Style="{StaticResource H2}" Margin="0,20,0,12" />
-
+                                <!-- High quality animation option disabled: causes exercise text to be unreadable
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>
                                         <ToggleButton x:Name="HighQualityAnimToggle" DockPanel.Dock="Right"
@@ -391,6 +390,9 @@
                                         </StackPanel>
                                     </DockPanel>
                                 </Border>
+                                -->
+
+                                <TextBlock Text="Break experience" Style="{StaticResource H2}" Margin="0,20,0,12" />
 
                                 <Border Style="{StaticResource SettingCard}">
                                     <DockPanel>

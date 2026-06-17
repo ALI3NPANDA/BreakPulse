@@ -17,6 +17,11 @@ public class AppSettings
     public bool SkipDuringMeetings { get; set; } = true;
     public bool DetectIdle { get; set; } = true;
     public int IdleThresholdSecs { get; set; } = 120;
+    /// <summary>
+    /// If the user is idle for at least this many minutes, reset the session timer
+    /// when they return so they get a full work session before the next break.
+    /// </summary>
+    public int IdleResetMinutes { get; set; } = 5;
     public bool AutoResume { get; set; } = true;
 
     // ── Alerts ────────────────────────────────────────────────────────────────
@@ -60,8 +65,10 @@ public class AppSettings
     public double BlockScreenOpacity { get; set; } = 0.85;
     public double ArcThickness { get; set; } = 4.0;
     public bool ShowCountdown { get; set; } = true;
-    public bool ShowExercise { get; set; } = true;
-    public bool UseHighQualityAnimation { get; set; } = false;
+     public bool ShowExercise { get; set; } = true;
+     // NOTE: High quality animation disabled as it impacts UX - causes exercise text to be unreadable
+     // public bool UseHighQualityAnimation { get; set; } = false;
+     public bool UseHighQualityAnimation { get; set; } = false; // DEPRECATED: Always use lightweight animation
 
     // ── Team / Enterprise ─────────────────────────────────────────────────────
     public bool TeamTelemetryEnabled { get; set; } = false;

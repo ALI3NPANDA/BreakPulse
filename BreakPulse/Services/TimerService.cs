@@ -51,6 +51,8 @@ public class TimerService
     private bool _paused;
     private bool _preWarnFired;
     private bool _breakDueFired; // prevents BreakDue from firing every tick
+    private bool _wasIdle;       // tracks whether the user was idle on the previous tick
+    private DateTime _idleStartedUtc; // when the idle period began
     private int _sessionCount;
     public bool IsPaused
     {
@@ -187,7 +189,29 @@ public class TimerService
         {
             var idle = GetIdleTime();
             if (idle.TotalSeconds >= _s.IdleThresholdSecs)
+            {
+                if (!_wasIdle)
+                {
+                    _wasIdle = true;
+                    _idleStartedUtc = DateTime.UtcNow;
+                }
                 return; // Don't advance timer while idle
+            }
+
+            // User is active — check if they just returned from a long idle period
+            if (_wasIdle)
+            {
+                _wasIdle = false;
+                var idleDuration = DateTime.UtcNow - _idleStartedUtc;
+                // If idle exceeded the reset threshold, restart the session timer
+                // so the user gets a full work session before the next break.
+                if (_s.IdleResetMinutes > 0 && idleDuration.TotalMinutes >= _s.IdleResetMinutes)
+                {
+                    _elapsed = TimeSpan.Zero;
+                    _preWarnFired = false;
+                    _breakDueFired = false;
+                }
+            }
         }
         _elapsed += TimeSpan.FromSeconds(1);
         var limit = _onBreak ? _breakLength : _sessionLength;

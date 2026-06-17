@@ -116,30 +116,43 @@
             <!-- ── Central content ─────────────────────────────────── -->
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Width="310">
+                        Width="500">
 
-                <!-- Emoji icon -->
-                <ContentControl x:Name="IconViewHost"
-                                Width="70" Height="70"
-                                HorizontalAlignment="Center"
-                                IsHitTestVisible="False"
-                                Margin="0,0,0,6" />
+                <!-- Icon image -->
+                <Image x:Name="IconViewHost"
+                       Width="70" Height="70"
+                       HorizontalAlignment="Center"
+                       IsHitTestVisible="False"
+                       Margin="0,0,0,6"
+                       Source="pack://application:,,,/Assets/icon.ico"
+                       Stretch="Uniform" />
 
-                <!-- Title -->
-                <ContentControl x:Name="TitleViewHost"
-                                Height="32"
-                                HorizontalAlignment="Stretch"
-                                IsHitTestVisible="False"
-                                Margin="0,0,0,2" />
+                <!-- Title (shows exercise text) -->
+                <TextBlock x:Name="TitleViewHost"
+                           Width="400"
+                           MaxHeight="100"
+                           Text="Take a moment to breathe and stretch."
+                           FontFamily="Segoe UI Variable, Segoe UI"
+                           FontSize="20"
+                           FontWeight="Medium"
+                           Foreground="#FFFFFFFF"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           IsHitTestVisible="False"
+                           Margin="0,20,0,2"
+                           TextOptions.TextFormattingMode="Display" />
 
-                <!-- Big break countdown -->
+                <!-- Big break countdown (at the bottom) -->
                 <TextBlock x:Name="CountdownLabel"
                            FontFamily="Cascadia Code, JetBrains Mono, Consolas"
-                           FontSize="42"
+                           Text="00:00"
+                           FontSize="35"
                            FontWeight="Light"
                            Foreground="#FFFFFFFF"
                            HorizontalAlignment="Center"
-                           Margin="0,2,0,4" />
+                           Margin="0,30,0,4" />
 
                 <TextBlock x:Name="RemainingLabel"
                            Text="R E M A I N I N G"
@@ -148,42 +161,25 @@
                            FontWeight="Medium"
                            Foreground="#88FFFFFF"
                            HorizontalAlignment="Center"
-                           Margin="0,0,0,16"
+                           Margin="0,0,0,0"
                            TextOptions.TextFormattingMode="Display" />
-
-                <!-- Stretch suggestion — frosted glass card -->
-                <Border x:Name="ExerciseCard"
-                        CornerRadius="14"
-                        Padding="14,10"
-                        Margin="0,0,0,18">
-                    <Border.Background>
-                        <SolidColorBrush Color="#FFFFFF" Opacity="0.07" />
-                    </Border.Background>
-                    <Border.BorderBrush>
-                        <SolidColorBrush Color="#FFFFFF" Opacity="0.10" />
-                    </Border.BorderBrush>
-                    <Border.BorderThickness>1</Border.BorderThickness>
-                    <ContentControl x:Name="ExerciseViewHost"
-                                    Height="90"
-                                    IsHitTestVisible="False" />
-                </Border>
-
+                
                 <!-- Action buttons -->
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center">
                     <Button x:Name="SnoozeBtn"
                             Content="Snooze"
                             Width="100" Height="36"
-                            Margin="0,0,10,0"
+                            Margin="0,20,10,0"
                             Style="{StaticResource PillButton}"
                             Click="Snooze_Click" />
                     <Button x:Name="Continue"
                             Content="End Break"
                             Width="120" Height="36"
+                            Margin="0,20,10,0"
                             Style="{StaticResource PillButton}"
                             Click="Continue_Click" />
                 </StackPanel>
-
                 <!-- Shortcut hint (RequireShortcut mode) -->
                 <TextBlock x:Name="ShortcutHint"
                            Text="Ctrl + Shift + B to dismiss"

@@ -172,17 +172,18 @@ public partial class SettingsWindow : Window
             _exerciseBoxes[i].Text = i < exercises.Count ? exercises[i] : "";
         }
 
-        // Appearance tab
-        BgColorBox.Text = _s.OverlayBackgroundColor;
-        AccentColorBox.Text = _s.ParticleAccentColor;
-        WaveColorBox.Text = _s.ParticleWaveColor;
-        BlockColorBox.Text = _s.BlockScreenColor;
-        BlockOpacitySlider.Value = _s.BlockScreenOpacity * 100;
-        //ArcToggle.IsChecked = _s.ShowProgressArc;
-        ShowCountdownToggle.IsChecked = _s.ShowCountdown;
-        ShowExerciseToggle.IsChecked = _s.ShowExercise;
-        TopMostToggle.IsChecked = _s.AlwaysOnTop;
-        HighQualityAnimToggle.IsChecked = _s.UseHighQualityAnimation;
+         // Appearance tab
+         BgColorBox.Text = _s.OverlayBackgroundColor;
+         AccentColorBox.Text = _s.ParticleAccentColor;
+         WaveColorBox.Text = _s.ParticleWaveColor;
+         BlockColorBox.Text = _s.BlockScreenColor;
+         BlockOpacitySlider.Value = _s.BlockScreenOpacity * 100;
+         //ArcToggle.IsChecked = _s.ShowProgressArc;
+         ShowCountdownToggle.IsChecked = _s.ShowCountdown;
+         ShowExerciseToggle.IsChecked = _s.ShowExercise;
+         TopMostToggle.IsChecked = _s.AlwaysOnTop;
+         // DISABLED: High quality animation removed (causes exercise text to be unreadable)
+         // HighQualityAnimToggle.IsChecked = _s.UseHighQualityAnimation;
 
         // Team tab
         // TelemetryToggle.IsChecked = _s.TeamTelemetryEnabled;
@@ -276,17 +277,18 @@ public partial class SettingsWindow : Window
         _s.Exercises = _exerciseBoxes.Select(b => b.Text.Trim()).ToList();
         while (_s.Exercises.Count < 10) _s.Exercises.Add("");
 
-        // Appearance
-        _s.OverlayBackgroundColor = BgColorBox.Text.Trim();
-        _s.ParticleAccentColor = AccentColorBox.Text.Trim();
-        _s.ParticleWaveColor = WaveColorBox.Text.Trim();
-        _s.BlockScreenColor = BlockColorBox.Text.Trim();
-        _s.BlockScreenOpacity = BlockOpacitySlider.Value / 100.0;
-        //_s.ShowProgressArc = ArcToggle.IsChecked == true;
-        _s.ShowCountdown = ShowCountdownToggle.IsChecked == true;
-        _s.ShowExercise = ShowExerciseToggle.IsChecked == true;
-        _s.AlwaysOnTop = TopMostToggle.IsChecked == true;
-        _s.UseHighQualityAnimation = HighQualityAnimToggle.IsChecked == true;
+         // Appearance
+         _s.OverlayBackgroundColor = BgColorBox.Text.Trim();
+         _s.ParticleAccentColor = AccentColorBox.Text.Trim();
+         _s.ParticleWaveColor = WaveColorBox.Text.Trim();
+         _s.BlockScreenColor = BlockColorBox.Text.Trim();
+         _s.BlockScreenOpacity = BlockOpacitySlider.Value / 100.0;
+         //_s.ShowProgressArc = ArcToggle.IsChecked == true;
+         _s.ShowCountdown = ShowCountdownToggle.IsChecked == true;
+         _s.ShowExercise = ShowExerciseToggle.IsChecked == true;
+         _s.AlwaysOnTop = TopMostToggle.IsChecked == true;
+         // DISABLED: High quality animation removed (causes exercise text to be unreadable)
+         // _s.UseHighQualityAnimation = HighQualityAnimToggle.IsChecked == true;
 
         // Team
         // _s.TeamTelemetryEnabled = TelemetryToggle.IsChecked == true;
