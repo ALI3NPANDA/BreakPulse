@@ -26,6 +26,8 @@
         <Resource Include="Assets\icon.ico" Condition="Exists('Assets\icon.ico')" />
         <!-- Copy icon to output directory for runtime loading -->
         <None Include="Assets\icon.ico" CopyToOutputDirectory="PreserveNewest" />
+        <!-- Copy PNG images to output directory -->
+        <None Include="Assets\png\*.png" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>

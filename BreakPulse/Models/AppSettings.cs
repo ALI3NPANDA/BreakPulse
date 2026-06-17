@@ -31,15 +31,15 @@ public class AppSettings
     // Exercise messages shown randomly during breaks (10 fixed slots; empty = skipped)
     public List<string> Exercises { get; set; } = new()
     {
-        "👀 Look at something 20 feet away for 20 seconds — rest your eyes.",
-        "🧍‍♂️ Roll your shoulders back 5 times, then forward 5 times.",
-        "💧 Grab a glass of water — hydration helps focus.",
-        "🚶 Take a short walk — even 2 minutes around the room helps.",
-        "🙆‍♂️ Reach both arms up, hold for 5 seconds, release and breathe.",
-        "😌 Close your eyes, take 5 slow deep breaths.",
-        "🦵 Stand up, do 10 calf raises.",
-        "🤲 Shake out your hands — relieve typing tension.",
-        "",
+        "Look at something 20 feet away for 20 seconds - rest your eyes.",
+        "Roll your shoulders back 5 times, then forward 5 times.",
+        "Grab a glass of water - hydration helps focus.",
+        "Take a short walk - even 2 minutes around the room helps.",
+        "Reach both arms up, hold for 5 seconds, release and breathe.",
+        "Close your eyes, take 5 slow deep breaths.",
+        "Stand up, sit down (hands free). Repeat the mini squat 5 times.",
+        "Shake out your hands - relieve typing tension.",
+        "Tighten stomach muscles for 10 seconds. Release completely.",
         "",
     };
     public bool RequireShortcut { get; set; } = false;

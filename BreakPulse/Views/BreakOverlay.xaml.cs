@@ -2,6 +2,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.IO;
 using BreakPulse.Models;
 using BreakPulse.Rendering;
 using BreakPulse.Services;
@@ -12,6 +14,9 @@ public partial class BreakOverlay : Window
 {
     private readonly AppSettings _s;
     private readonly TimerService _timer;
+    
+    // ── Icon source property ──────────────────────────────────────────────
+    public BitmapImage? IconSource { get; private set; }
 
     // ── Arc constants (canvas 460×460, large ring near circle edge) ──────────
     private const double BreakArcRadius = 222.0;
@@ -50,10 +55,14 @@ public partial class BreakOverlay : Window
             ApplyFullscreenBlocking();
         }
 
-        // Set the exercise text in TitleViewHost
-        TitleViewHost.Text = PickRandomExercise(settings.Exercises);
-        
-        if (settings.RequireShortcut)
+     // Set the exercise text in TitleViewHost
+         TitleViewHost.Text = PickRandomExercise(settings.Exercises);
+         
+         // Set random icon from PNG files
+         IconSource = PickRandomIconImage();
+         IconViewHost.Source = IconSource;
+         
+         if (settings.RequireShortcut)
         {
             ShortcutHint.Visibility = Visibility.Visible;
             SnoozeBtn.IsEnabled = false;
@@ -203,14 +212,46 @@ public partial class BreakOverlay : Window
         ArcGlow.Data = ArcFill.Data; // sync glow with fill
     }
 
-    // Picks a random non-empty exercise; falls back to a default if all are empty.
-    private static string PickRandomExercise(IList<string> exercises)
-    {
-        List<string> active = exercises.Where(e => !string.IsNullOrWhiteSpace(e)).ToList();
-        return active.Count > 0
-            ? active[Random.Shared.Next(active.Count)]
-            : "Take a moment to breathe and stretch.";
-    }
+     // Picks a random non-empty exercise; falls back to a default if all are empty.
+     private static string PickRandomExercise(IList<string> exercises)
+     {
+         List<string> active = exercises.Where(e => !string.IsNullOrWhiteSpace(e)).ToList();
+         return active.Count > 0
+             ? active[Random.Shared.Next(active.Count)]
+             : "Take a moment to breathe and stretch.";
+     }
+
+      // Picks a random PNG image from the Assets folder.
+      private BitmapImage? PickRandomIconImage()
+      {
+          try
+          {
+              // Get the assets folder path
+              var assetsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets/png");
+              if (!Directory.Exists(assetsPath))
+                  return null;
+
+              // Get all PNG files
+              var pngFiles = Directory.GetFiles(assetsPath, "*.png");
+              if (pngFiles.Length == 0)
+                  return null;
+
+              // Pick a random PNG file
+              var randomPng = pngFiles[Random.Shared.Next(pngFiles.Length)];
+              var bitmap = new BitmapImage();
+              bitmap.BeginInit();
+              bitmap.UriSource = new Uri(randomPng);
+              bitmap.CacheOption = BitmapCacheOption.OnLoad;
+              bitmap.EndInit();
+              bitmap.Freeze();
+              return bitmap;
+          }
+          catch
+          {
+              // If anything goes wrong, return null (XAML will use fallback)
+              return null;
+          }
+      }
 
     private void OnTimerTick(TimeSpan remaining, double progress)
     {

@@ -120,20 +120,20 @@
 
                 <!-- Icon image -->
                 <Image x:Name="IconViewHost"
-                       Width="70" Height="70"
+                       Width="94" Height="94"
                        HorizontalAlignment="Center"
                        IsHitTestVisible="False"
                        Margin="0,0,0,6"
-                       Source="pack://application:,,,/Assets/icon.ico"
+                       Source="{Binding IconSource}"
                        Stretch="Uniform" />
 
                 <!-- Title (shows exercise text) -->
                 <TextBlock x:Name="TitleViewHost"
                            Width="400"
-                           MaxHeight="100"
-                           Text="Take a moment to breathe and stretch."
+                           MaxHeight="150"
+                           Text="Look at something 20 feet away for 20 seconds — rest your eyes."
                            FontFamily="Segoe UI Variable, Segoe UI"
-                           FontSize="20"
+                           FontSize="25"
                            FontWeight="Medium"
                            Foreground="#FFFFFFFF"
                            HorizontalAlignment="Center"

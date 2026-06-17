@@ -106,7 +106,6 @@ yarn-error.log
 *.swp
 
 # Binary assets (do not attempt to merge)
-*.png
 *.jpg
 *.jpeg
 *.gif
